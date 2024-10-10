@@ -69,6 +69,21 @@ const Events = () => {
 
   return (
     <div className="my-10">
+      <div>
+        <div className='flex justify-center gap-3 mt-5'>
+                    <button
+                        className="w-1/3 my-3 rounded-lg bg-primary py-2 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    >
+                        اضافة فئة جديدة
+
+                    </button>
+                    <button
+                        className="w-1/3 my-3 rounded-lg border-2 border-primary py-2 font-semibold text-primary shadow-sm hover:bg-primary hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    >
+                        تعديل الفئات الحالية
+                    </button>
+                </div>
+      </div>
       <div className="container">
         <FormAddEvents tabs={tabs}/>
       </div>

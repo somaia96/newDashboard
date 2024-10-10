@@ -78,7 +78,6 @@ function Member({ member }: { member: IMember }) {
                 onClick={() => setOpenDel(false)}
                 className="w-1/3 my-3 rounded-lg border-2 border-red-800 py-2 font-semibold text-red-800 shadow-sm hover:bg-red-500 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
-
                 الغاء
               </button>
             </div>
