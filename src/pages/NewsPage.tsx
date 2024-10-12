@@ -11,6 +11,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useQuery } from '@tanstack/react-query'
 import CardSkeleton from "../components/Skeleton/CardSkeleton";
 import FormAddNews from "../components/Form/FormsAdd/FormAddNews";
+import FormAddSkeleton from "../components/Skeleton/FormAddSkeleton";
 
 const pagesize = 2;
 const NewsPage = () => {
@@ -37,8 +38,11 @@ const NewsPage = () => {
   };
 
   if (isLoading) return (
-    <div className="my-10 container space-y-5">
-      {Array.from({ length: 5 }).map((_, i) => <CardSkeleton key={i} />)}
+    <div className="flex flex-col items-center justify-center">
+      <FormAddSkeleton />
+      <div className="my-10 container space-y-5">
+        {Array.from({ length: 5 }).map((_, i) => <CardSkeleton key={i} />)}
+      </div>
     </div>
   )
 

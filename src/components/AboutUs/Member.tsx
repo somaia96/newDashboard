@@ -93,7 +93,7 @@ function Member({ member }: { member: IMember }) {
           <Dialog.Panel
             className="relative transform overflow-hidden rounded-lg bg-white shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
           >
-            <FormEditMember item={member} setOpenEdit={setOpenEdit}/>
+            <FormEditMember item={member} setOpenEdit={setOpenEdit} />
           </Dialog.Panel>
         </div>
       </Dialog>
@@ -124,7 +124,7 @@ function Member({ member }: { member: IMember }) {
             حذف
           </button>
         </div>
-    </CardBody>
+      </CardBody>
     </Card >
   );
 }

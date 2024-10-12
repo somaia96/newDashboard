@@ -17,7 +17,7 @@ export interface INewsApi{
     description:string|string[],
     photos?:string[],
     activity_date?:string,
-    service_category_id?:string,
+    service_category_id?:number,
     activity_type_id?:number,
     created_at?:string,
     decision_id?:number,

@@ -75,7 +75,7 @@ export default function FormAddEvents({ tabs }: { tabs: IEventTabs[] }) {
 
                     <div className="flex items-center justify-between">
                         <label htmlFor="name" className="text-sm font-medium w-16 leading-6 text-gray-900">
-                            النوع
+                        الفئة
                         </label>
                         <div className="flex rounded-md shadow-sm py-1 flex-1 gap-2" style={{scrollbarWidth:"thin", scrollbarColor: "#cfcfcfb8 transparent" }}>
                             {tabs.map((tab: IEventTabs) => (

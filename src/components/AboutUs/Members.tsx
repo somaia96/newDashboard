@@ -11,6 +11,7 @@ import Alerting from "../Complaint/Alert";
 import { IMember } from "@/interfaces";
 import Member from "./Member";
 import MemberSkeleton from "../Skeleton/MemberSkeleton";
+import FormAddSkeleton from "../Skeleton/FormAddSkeleton";
 
 const Members = () => {
   const { isLoading, error, data } = useQuery({
@@ -23,7 +24,8 @@ const Members = () => {
 
   if (isLoading) return (
     <div className="flex items-center justify-center gap-5">
-      <div className="rounded-full w-8 h-8 bg-gray-300 -ms-12"></div>
+      {/* <div className="rounded-full w-8 h-8 bg-gray-300 -ms-12"></div> */}
+      <FormAddSkeleton/>
       <div className="my-10 space-y-5 w-full">
         <h3 className="text-lg font-bold  text-primary my-5">أعضاء مجلس البلدية:</h3>
         <div className="flex gap-5 justify-between items-center">
@@ -47,8 +49,8 @@ const Members = () => {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious  className="hidden md:inline-flex"/>
-        <CarouselNext  className="hidden md:inline-flex"/>
+        <CarouselPrevious className="hidden md:inline-flex" />
+        <CarouselNext className="hidden md:inline-flex" />
       </Carousel>
     </div>
   )

@@ -1,5 +1,5 @@
 import CardNews from '../components/Card';
-import { useState } from "react";
+import { ChangeEvent, MouseEvent, useState } from "react";
 import { INewsApi } from "@/interfaces";
 import { Button } from '../components/ui/button';
 import Alerting from '../components/Complaint/Alert';
@@ -9,35 +9,128 @@ import { txtSlicer } from '../utils/functions';
 import CardSkeleton from '../components/Skeleton/CardSkeleton';
 import TabSkeleton from '../components/Skeleton/TabSkeleton';
 import FormAddServ from '../components/Form/FormsAdd/FormAddServ';
+import { Dialog } from '@headlessui/react'
+import toast from 'react-hot-toast';
+import FormAddSkeleton from '../components/Skeleton/FormAddSkeleton';
 
 interface IEventTabs {
   id: number,
   name: string,
 }
 const Services = () => {
-
-  const [filteredEvents, setFilteredEvents] = useState([]);
+  // tabs
+  const [nameTab, setNameTab] = useState("");
+  const [addArr, setAddArr] = useState([]);
+  const [delArr, setDelArr] = useState<number[]>([]);
   const [activeTab, setActiveTab] = useState<number>(1);
+  // modal
+  const [openAdd, setOpenAdd] = useState(false)
+  const [openEdit, setOpenEdit] = useState(false)
+  // data
+  const [filteredEvents, setFilteredEvents] = useState([]);
+
   const { isLoading, error, data } = useQuery({
     queryKey: ['serviceData'],
     queryFn: async () => {
       const serviceRes = await instance.get('/services')
       const tabRes = await instance.get('/service-categories');
       setFilteredEvents(serviceRes.data.data)
-
+      setAddArr(tabRes.data.data)
       return { serviceRes, tabRes }
     }
   })
+
+  const getToken = () => {
+    return localStorage.getItem('tokenMunicipality');
+  };
+  // Tabs Add & Edit
+  // add tab
+  const changeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    setNameTab(e.target.value)
+
+  }
+  // cancel add tab
+  const cancelHandler = () => {
+    setNameTab("")
+    setOpenAdd(false)
+  }
+  // confirm add tab
+  const submitHandler = async () => {
+    try {
+      let res = await instance.post("/service-categories", { name: nameTab }, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
+        }
+      });
+
+      (res.status === 200 || res.status === 201) ? toast.success('تم ارسال الطلب ', {
+        duration: 2000,
+        position: 'top-center',
+        className: 'bg-blue-100',
+        icon: '👏',
+      }) : null;
+      setOpenAdd(false)
+      setNameTab("")
+
+    } catch (error) {
+      console.error('Error fetching news:', error);
+      toast.error('حدث خطأ أثناء ارسال الطلب', {
+        duration: 2000,
+        position: 'top-center',
+        className: 'bg-red-100',
+      });
+    }
+
+  }
+  // Tabs Editing
+  // delete tabs temp
+  const addToDelArr = (idDel: number) => {
+    setDelArr((prev: number[]) => [idDel, ...prev])
+    setAddArr((prev) => prev.filter((item: IEventTabs) => item.id !== idDel))
+  }
+  // cancel deleting tabs
+  const cancelEditHandler = () => {
+    setAddArr(data?.tabRes.data.data)
+    setDelArr([])
+    setOpenEdit(false)
+  }
+  // delete tabs perm
+  const submitEditCatHandler = async () => {
+    try {
+      delArr.forEach((id) => {
+        instance.delete(`/service-categories/${id}`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${getToken()}`,
+          }
+        });
+      });
+      setOpenEdit(false)
+      setDelArr([])
+      setAddArr(data?.tabRes.data.data)
+
+    } catch (error) {
+      console.error('Error fetching news:', error);
+      toast.error('حدث خطأ أثناء ارسال الطلب', {
+        duration: 2000,
+        position: 'top-center',
+        className: 'bg-red-100',
+      });
+    }
+  }
 
   const tabs = data?.tabRes.data.data;
 
   const handlActiveTabClick = (tab: number) => {
     setActiveTab(tab);
-    setFilteredEvents(data?.serviceRes.data.data.filter((servData: INewsApi) => servData.service_category_id === `${tab}`));
+    setFilteredEvents(data?.serviceRes.data.data.filter((servData: INewsApi) => servData.service_category_id === tab));
   };
 
+
   if (isLoading) return (
-    <div className="my-10 space-y-5">
+    <div className="my-10 space-y-5 flex flex-col items-center justify-center">
+      <FormAddSkeleton serv={true} />
       <div className="font-header font-bold text-center md:text-3xl text-primary">الخدمات</div>
       <div className='flex items-center justify-center gap-4 my-3'>
         {Array.from({ length: 5 }).map((_, i) => <TabSkeleton key={i} />)}
@@ -51,6 +144,110 @@ const Services = () => {
   if (error) return <Alerting />
   return (
     <div className='my-5'>
+      {/* Modal Add category */}
+      <Dialog open={openAdd} onClose={setOpenAdd} className="relative z-10">
+        <Dialog.Backdrop
+          className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
+        />
+        <div className="fixed inset-0 flex justify-center items-center z-10 w-screen overflow-y-auto">
+          <Dialog.Panel
+            className="relative transform overflow-hidden rounded-lg bg-white p-5 shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
+          >
+            <h2 className="font-semibold text-xl mb-5 text-center">اضافة فئة خدمة جديدة</h2>
+            <div className="flex items-center justify-between gap-3">
+              <label htmlFor="name" className=" font-medium  leading-6 text-gray-900">
+                اسم الفئة :
+              </label>
+              <div className="flex rounded-md shadow-sm flex-1">
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder='يجب ألا تتجاوز الفئة 12 حرف'
+                  autoComplete="name"
+                  value={nameTab}
+                  onChange={(e) => { changeHandler(e) }}
+                  className="bg-white block border border-1 border-gray-300 flex-1 rounded-lg px-3 py-1.5 placeholder:text-gray-400 sm:text-sm w-full sm:leading-6"
+                />
+              </div>
+            </div>
+            <div className='flex justify-center gap-3 mt-5'>
+              <button
+                onClick={submitHandler}
+                className="w-1/3 my-3 rounded-lg bg-primary py-2 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              >
+                نشر
+              </button>
+              <button
+                onClick={cancelHandler}
+                className="w-1/3 my-3 rounded-lg border-2 border-red-800 py-2 font-semibold text-red-800 shadow-sm hover:bg-red-500 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              >
+                الغاء
+              </button>
+            </div>
+          </Dialog.Panel>
+        </div>
+      </Dialog>
+      {/* Modal Edit category */}
+      <Dialog open={openEdit} onClose={setOpenEdit} className="relative z-10">
+        <Dialog.Backdrop
+          className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
+        />
+        <div className="fixed inset-0 flex justify-center items-center z-10 w-screen overflow-y-auto">
+          <Dialog.Panel
+            className="relative transform overflow-hidden rounded-lg bg-white p-5 shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
+          >
+            <h2 className="font-semibold text-xl mb-5 text-primary text-center">اضافة فئة خدمة جديدة</h2>
+            <div className='flex flex-col gap-2'>
+              {addArr.map((item: IEventTabs) => {
+
+                return <div key={item.id} className="flex items-center shadow-md p-4 rounded-lg justify-between gap-7">
+                  <div className=" font-medium text-lg leading-6 text-gray-700">
+                    {item.name}
+                  </div>
+                  <div
+                    onClick={() => addToDelArr(item.id)}
+                    className="flex rounded-md text-sm text-red-800 justify-end flex-1">
+                    حذف
+                  </div>
+                </div>
+              })}
+            </div>
+            <div className='flex justify-center gap-3 mt-5'>
+              <button
+                onClick={submitEditCatHandler}
+                className="w-1/3 my-3 rounded-lg bg-primary py-2 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              >
+                حفظ التعديلات
+              </button>
+              <button
+                onClick={cancelEditHandler}
+                className="w-1/3 my-3 rounded-lg border-2 border-red-800 py-2 font-semibold text-red-800 shadow-sm hover:bg-red-500 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              >
+                الغاء
+              </button>
+            </div>
+          </Dialog.Panel>
+        </div>
+      </Dialog>
+      <div>
+        <div className='flex justify-center gap-3 mt-5'>
+          <button
+            onClick={() => setOpenAdd(true)}
+            className="flex justify-around items-center w-1/4 px-5 text-lg my-3 rounded-lg bg-primary py-2 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          >
+            اضافة فئة جديدة
+            <i className="fa-solid fa-plus fa-xl text-lg"></i>
+          </button>
+
+          <button
+            onClick={() => setOpenEdit(true)}
+            className="w-1/4 my-3 rounded-lg border-2 text-lg border-primary py-2 font-semibold text-primary shadow-sm hover:bg-primary hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          >
+            تعديل الفئات الحالية
+          </button>
+        </div>
+      </div>
       <div className="container">
         <FormAddServ tabs={tabs} />
       </div>

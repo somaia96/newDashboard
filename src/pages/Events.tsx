@@ -14,6 +14,7 @@ import { txtSlicer } from "../utils/functions";
 import CardSkeleton from "../components/Skeleton/CardSkeleton";
 import TabSkeleton from "../components/Skeleton/TabSkeleton";
 import FormAddEvents from "../components/Form/FormsAdd/FormAddEvent";
+import FormAddSkeleton from "../components/Skeleton/FormAddSkeleton";
 
 interface IEventTabs {
   id: number,
@@ -23,7 +24,7 @@ const pagesize = 2;
 
 const Events = () => {
 
-  const [filteredEvents,setFilteredEvents] = useState([]);
+  const [filteredEvents, setFilteredEvents] = useState([]);
   const [activeTab, setActiveTab] = useState<string>("");
   const { isLoading, error, data } = useQuery({
     queryKey: ['activityData'],
@@ -31,7 +32,7 @@ const Events = () => {
       const eventRes = await instance.get('/activity')
       const tabRes = await instance.get('/activity-type');
       setFilteredEvents(eventRes.data.data)
-      
+
       return { eventRes, tabRes }
     }
   })
@@ -56,7 +57,8 @@ const Events = () => {
   };
 
   if (isLoading) return (
-    <div className="my-10 space-y-5">
+    <div className="my-10 space-y-5 flex flex-col items-center justify-center">
+      <FormAddSkeleton/>
       <div className="font-header md:text-3xl font-bold text-center text-primary">الفعاليات</div>
       <div className='flex items-center justify-center gap-4 my-3'>
         {Array.from({ length: 5 }).map((_, i) => <TabSkeleton key={i} />)}
@@ -69,26 +71,11 @@ const Events = () => {
 
   return (
     <div className="my-10">
-      <div>
-        <div className='flex justify-center gap-3 mt-5'>
-                    <button
-                        className="w-1/3 my-3 rounded-lg bg-primary py-2 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    >
-                        اضافة فئة جديدة
-
-                    </button>
-                    <button
-                        className="w-1/3 my-3 rounded-lg border-2 border-primary py-2 font-semibold text-primary shadow-sm hover:bg-primary hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    >
-                        تعديل الفئات الحالية
-                    </button>
-                </div>
-      </div>
       <div className="container">
-        <FormAddEvents tabs={tabs}/>
+        <FormAddEvents tabs={tabs} />
       </div>
       <div className="font-header md:text-3xl font-bold text-center text-primary">الفعاليات</div>
-      <div className='flex lg:justify-center items-center gap-3 overflow-x-scroll py-2' style={{ scrollbarWidth:"thin", scrollbarColor: "#cfcfcfb8 transparent" }}>
+      <div className='flex lg:justify-center items-center gap-3 overflow-x-scroll py-2' style={{ scrollbarWidth: "thin", scrollbarColor: "#cfcfcfb8 transparent" }}>
         {tabs.map((tab: IEventTabs) => (
           <Button key={tab.id}
             onClick={() => handlActiveTabClick(tab.name)}
@@ -98,7 +85,7 @@ const Events = () => {
         ))}
       </div>
       {filteredEvents.slice(Pag.from, Pag.to).map((news: INewsApi) => (
-        <CardNews news={news} key={news.id} url="/activity" tabs={tabs}/>
+        <CardNews news={news} key={news.id} url="/activity" tabs={tabs} />
       ))}
       <div className="flex justify-items-center justify-center	">
         <Stack spacing={2}>

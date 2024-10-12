@@ -70,7 +70,7 @@ export default function FormAddServ({ tabs }: { tabs: IEventTabs[] }) {
 
                     <div className="flex items-center justify-between">
                         <label htmlFor="name" className="text-sm font-medium w-16 leading-6 text-gray-900">
-                            النوع
+                            الفئة
                         </label>
                         <div style={{scrollbarWidth:"thin", scrollbarColor: "#cfcfcfb8 transparent" }} className="overflow-x-scroll py-1 flex rounded-md shadow-sm flex-1 gap-2">
                             {tabs.map((tab: IEventTabs) => (

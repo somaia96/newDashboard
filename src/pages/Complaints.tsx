@@ -28,11 +28,17 @@ const pagesize = 9;
 export default function Complaints() {
     const TABLE_HEAD = ["الاسم", "رقم الهاتف", "التاريخ", "التفاصيل"];
 
-
+    const getToken = () => {
+        return localStorage.getItem('tokenMunicipality');
+    };
     const { isLoading, error, data } = useQuery({
         queryKey: ['complaint'],
         queryFn: async () => {
-            const { data } = await instance.get('/complaint')
+            const { data } = await instance.get('/complaint',{
+                headers:{
+                    Authorization: `Bearer ${getToken()}`
+                }
+            })
             return data.data
         }
     })
