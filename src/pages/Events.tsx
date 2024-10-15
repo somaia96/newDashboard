@@ -75,7 +75,7 @@ const Events = () => {
         <FormAddEvents tabs={tabs} />
       </div>
       <div className="font-header md:text-3xl font-bold text-center text-primary">الفعاليات</div>
-      <div className='flex lg:justify-center items-center gap-3 overflow-x-scroll py-2' style={{ scrollbarWidth: "thin", scrollbarColor: "#cfcfcfb8 transparent" }}>
+      <div className='flex lg:justify-center items-center gap-3 py-2'>
         {tabs.map((tab: IEventTabs) => (
           <Button key={tab.id}
             onClick={() => handlActiveTabClick(tab.name)}

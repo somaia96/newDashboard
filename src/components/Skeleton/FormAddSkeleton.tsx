@@ -1,7 +1,7 @@
 
 const FormAddSkeleton = ({ serv = false }: { serv?: boolean }) => {
     return (
-        <div role="status" className="animate-pulse flex flex-col justify-center items-center w-full my-10 p-5 space-y-0 rtl:space-x-reverse">
+        <div role="status" className="animate-pulse flex flex-col justify-center items-center w-full mt-10 p-5 space-y-0 rtl:space-x-reverse">
             {serv && <div className='flex justify-center items-center gap-10 w-full mb-5'>
                 <div className="h-8 bg-gray-300 rounded-xl dark:bg-gray-700 w-48 mb-4"></div>
                 <div className="h-8 bg-gray-300 rounded-xl dark:bg-gray-700 w-48 mb-4"></div>

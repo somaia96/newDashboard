@@ -3,7 +3,7 @@ import Layout from "../pages/Layout";
 import PageNotFound from "../pages/PageNotFound";
 import HomePage from "../pages/HomePage";
 import Decisions from "../pages/Decisions";
-import AboutUs from "../pages/About";
+import Members from "../pages/Members";
 import NewsPage from "../pages/NewsPage";
 import Services from "../pages/Services";
 import Events from "../pages/Events";
@@ -23,7 +23,7 @@ const router = createBrowserRouter(
                 <Route path="decisions" element={<Decisions />} />
                 <Route path="events" element={<Events  />} />
                 <Route path="services" element={<Services />} />
-                <Route path="about" element={<AboutUs />} />
+                <Route path="about" element={<Members />} />
                 <Route path="complaints" element={<Complaints />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
