@@ -2,11 +2,12 @@ import { FormEvent, ChangeEvent, useState } from 'react';
 import instance from '../../../api/instance'
 import toast, { Toaster } from 'react-hot-toast';
 import { PhotoIcon } from '@heroicons/react/24/solid'
-import { INewsApi } from '@/interfaces';
+import { IDecisions } from '../../../interfaces';
 
-export default function FormEditDecision({item,setOpenEdit}:{item:INewsApi,setOpenEdit:(val:boolean)=>void}) {
 
-    const [descData, setDescData] = useState({
+export default function FormEditDecision({item,setOpenEdit}:{item:IDecisions,setOpenEdit:(val:boolean)=>void}) {
+
+    const [descData, setDescData] = useState<IDecisions>({
         title: item.title,
         description: item.description,
         photos: [],
@@ -19,13 +20,16 @@ export default function FormEditDecision({item,setOpenEdit}:{item:INewsApi,setOp
         return localStorage.getItem('tokenMunicipality');
     };
 
-    const changeHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
+    const changeEditHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        const files = e.target.files;
 
-        if (name == "photos") {
-            const descPhotos = Array.from(files);
+        if (name == "photo") {
+            const files: FileList | null = (e.target as HTMLInputElement).files;
+            const filesArray = files ?? [];
+            if (filesArray?.length > 0) {
+            const descPhotos = Array.from(filesArray);
             setDescData((prev) => ({ ...prev, photos: descPhotos }));
+        }
         } else {
             setDescData((prev) => ({ ...prev, [name]: value }));
         }
@@ -76,7 +80,7 @@ export default function FormEditDecision({item,setOpenEdit}:{item:INewsApi,setOp
                                 placeholder="عنوان القرار"
                                 autoComplete="title"
                                 value={descData?.title}
-                                onChange={(e) => { changeHandler(e) }}
+                                onChange={(e) => { changeEditHandler(e) }}
                                 className="bg-white block border border-1 border-gray-300 flex-1 rounded-lg px-3 py-1.5 placeholder:text-gray-400 sm:text-sm w-full sm:leading-6"
                             />
                         </div>
@@ -93,7 +97,7 @@ export default function FormEditDecision({item,setOpenEdit}:{item:INewsApi,setOp
                                 type="date"
                                 autoComplete="date"
                                 value={descData.decision_date}
-                                onChange={(e) => { changeHandler(e) }}
+                                onChange={(e) => { changeEditHandler(e) }}
                                 className="bg-white block border border-1 border-gray-300  flex-1 rounded-lg px-3 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 sm:text-sm w-full sm:leading-6"
                             />
                         </div>
@@ -109,7 +113,7 @@ export default function FormEditDecision({item,setOpenEdit}:{item:INewsApi,setOp
                                 name="description"
                                 rows={2}
                                 value={descData?.description}
-                                onChange={(e) => { changeHandler(e) }}
+                                onChange={(e) => { changeEditHandler(e) }}
                                 placeholder='نص القرار'
                                 className="block border border-1 border-gray-300  px-3 w-full rounded-md py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6"
                             />
@@ -125,17 +129,17 @@ export default function FormEditDecision({item,setOpenEdit}:{item:INewsApi,setOp
                                 <PhotoIcon aria-hidden="true" className="mx-auto h-12 w-12 text-gray-300" />
                                 <div className="items-center justify-center flex text-xs leading-6 text-gray-600">
                                     <label
-                                        htmlFor="photos"
+                                        htmlFor="photo"
                                         className="relative cursor-pointer rounded-md bg-white font-semibold text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
                                     >
                                         <span>اضغط لإضافة صور أو اسحب الصور وافلت هنا</span>
                                         <input
-                                            id="photos"
-                                            name="photos"
+                                            id="photo"
+                                            name="photo"
                                             type="file"
                                             accept="image/*"
                                             multiple
-                                            onChange={(e) => { changeHandler(e) }}
+                                            onChange={(e) => { changeEditHandler(e) }}
                                             className="sr-only" />
                                     </label>
                                 </div>

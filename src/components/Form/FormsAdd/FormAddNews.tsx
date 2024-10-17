@@ -2,9 +2,10 @@ import { FormEvent, ChangeEvent, useState } from 'react';
 import instance from '../../../api/instance'
 import toast, { Toaster } from 'react-hot-toast';
 import { PhotoIcon } from '@heroicons/react/24/solid'
+import { INews } from '../../../interfaces';
 
 export default function FormAddNews() {
-    const [newsData, setNewsData] = useState({
+    const [newsData, setNewsData] = useState<INews>({
         title: "",
         description: "",
         photos: [],
@@ -14,19 +15,22 @@ export default function FormAddNews() {
         return localStorage.getItem('tokenMunicipality');
     };
 
-    const changeHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
+    const changeAddHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        const files = e.target.files;
-    
-        if (name == "photos") {
-          const newPhotos = Array.from(files);
-          setNewsData((prev) => ({ ...prev, photos: newPhotos }));
-        } else {
-          setNewsData((prev) => ({ ...prev, [name]: value }));
-        }
-      };
 
-    const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
+        if (name == "photos") {
+            const files: FileList | null = (e.target as HTMLInputElement).files;
+            const filesArray = files ?? [];
+            if (filesArray?.length > 0) {
+                const newPhotos = Array.from(filesArray) as File[];
+                setNewsData((prev) => ({ ...prev, photos: newPhotos }));
+            }
+        } else {
+            setNewsData((prev) => ({ ...prev, [name]: value }));
+        }
+    };
+
+    const submitAddHandler = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         try {
             let res = await instance.post("/news", newsData, {
@@ -54,7 +58,7 @@ export default function FormAddNews() {
 
     return (
         <div className='flex gap-3 p-5 my-10 rounded-3xl bg-white'>
-            <form className='w-full rounded-xl' onSubmit={(e) => submitHandler(e)}>
+            <form className='w-full rounded-xl' onSubmit={(e) => submitAddHandler(e)}>
                 <Toaster position="top-center" reverseOrder={false} />
                 <div className="space-y-2">
                     <h2 className='font-bold text-xl text-center text-primary mb-5'>اضافة خبر جديد</h2>
@@ -70,7 +74,7 @@ export default function FormAddNews() {
                                 placeholder="عنوان الخبر"
                                 autoComplete="title"
                                 value={newsData?.title}
-                                onChange={(e) => { changeHandler(e) }}
+                                onChange={(e) => { changeAddHandler(e) }}
                                 className="bg-white block border border-1 border-gray-300 flex-1 rounded-lg px-3 py-1.5 placeholder:text-gray-400 sm:text-sm w-full sm:leading-6"
                             />
                         </div>
@@ -86,7 +90,7 @@ export default function FormAddNews() {
                                 name="description"
                                 rows={2}
                                 value={newsData?.description}
-                                onChange={(e) => { changeHandler(e) }}
+                                onChange={(e) => { changeAddHandler(e) }}
                                 placeholder='نص الخبر'
                                 className="block border border-1 border-gray-300  px-3 w-full rounded-md py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6"
                             />
@@ -112,7 +116,7 @@ export default function FormAddNews() {
                                             type="file"
                                             accept="image/*"
                                             multiple
-                                            onChange={(e) => { changeHandler(e) }}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => { changeAddHandler(e) }}
                                             className="sr-only" />
                                     </label>
                                 </div>

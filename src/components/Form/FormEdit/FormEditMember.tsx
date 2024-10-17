@@ -2,12 +2,15 @@ import { FormEvent, ChangeEvent, useState } from 'react';
 import instance from '../../../api/instance'
 import toast from 'react-hot-toast';
 import { PhotoIcon } from '@heroicons/react/24/solid'
-import { IMember } from '@/interfaces';
+import { IMembers } from '@/interfaces';
 
-export default function FormEditMember({ item, setOpenEdit }: { item: IMember, setOpenEdit: (val: boolean) => void }) {
-    const [memberData, setMemberData] = useState({
-        name: item.name,
-        photos: [],
+
+export default function FormEditMember({setRefresh, member, setOpenEdit }: {setRefresh:(val:string)=>void, member: IMembers, setOpenEdit: (val: boolean) => void }) {
+    const [memberEditData, setMemberEditData] = useState<IMembers>({
+        name: member.name,
+        job_title:member.job_title,
+        description:member.description,
+        photo: "",
         _method: "PUT",
     })
 
@@ -15,34 +18,39 @@ export default function FormEditMember({ item, setOpenEdit }: { item: IMember, s
         return localStorage.getItem('tokenMunicipality');
     };
 
-    const changeHandler = async (e: ChangeEvent<HTMLInputElement>) => {
+    const changeEditHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        const files = e.target.files;
-
-        if (name == "photos") {
-            const newPhotos = Array.from(files);
-            setMemberData((prev) => ({ ...prev, photos: newPhotos }));
+        
+        if (name === "photos") {
+            const files: FileList | null = (e.target as HTMLInputElement).files;
+            const filesArray = files ?? [];
+            if (filesArray?.length > 0) {
+               
+            const newEditPhotos = Array.from(filesArray);
+            setMemberEditData((prev) => ({ ...prev, photo: newEditPhotos[0] }));
+            }
         } else {
-            setMemberData((prev) => ({ ...prev, [name]: value }));
+            setMemberEditData((prev) => ({ ...prev, [name]: value }));
         }
     };
 
     const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
+        
         try {
-            let res = await instance.post(`/council-members/${item.id}`, memberData, {
+            let res = await instance.post(`/council-members/${member.id}`, memberEditData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                     Authorization: `Bearer ${getToken()}`,
                 }
             });
-
             (res.status === 200 || res.status === 201) ? toast.success('تم تعديل المعلومات ', {
                 duration: 2000,
                 position: 'top-center',
                 className: 'bg-blue-100',
                 icon: '👏',
             }) : null;
+            setRefresh("true")
         } catch (error) {
             console.error('Error fetching news:', error);
             toast.error('حدث خطأ أثناء ارسال الطلب', {
@@ -54,9 +62,8 @@ export default function FormEditMember({ item, setOpenEdit }: { item: IMember, s
     };
 
     return (
-        <div className='flex gap-3 p-5 my-10 rounded-3xl bg-white'>
+        <div className='flex gap-3 p-5  rounded-3xl bg-white'>
             <form className='w-full rounded-xl' onSubmit={(e) => submitHandler(e)}>
-                {/* <Toaster position="top-center" reverseOrder={false} /> */}
                 <div className="space-y-2">
                     <h2 className='font-bold text-xl text-center text-primary mb-5'>تعديل العضو</h2>
                     <div className="flex items-center justify-between">
@@ -70,12 +77,47 @@ export default function FormEditMember({ item, setOpenEdit }: { item: IMember, s
                                 type="text"
                                 placeholder="اسم العضو"
                                 autoComplete="name"
-                                value={memberData?.name}
-                                onChange={(e) => { changeHandler(e) }}
+                                value={memberEditData?.name}
+                                onChange={(e) => { changeEditHandler(e) }}
                                 className="bg-white block border border-1 border-gray-300 flex-1 rounded-lg px-3 py-1.5 placeholder:text-gray-400 sm:text-sm w-full sm:leading-6"
                             />
                         </div>
                     </div>
+
+                    <div className="flex items-center justify-between">
+                        <label htmlFor="job" className="text-sm font-medium w-16 leading-6 text-gray-900">
+                            المنصب :
+                        </label>
+                        <div className="flex rounded-md shadow-sm flex-1">
+                            <input
+                                id="job"
+                                name="job_title"
+                                type="text"
+                                placeholder="المنصب"
+                                autoComplete="job"
+                                value={memberEditData?.job_title}
+                                onChange={(e) => { changeEditHandler(e) }}
+                                className="bg-white block border border-1 border-gray-300 flex-1 rounded-lg px-3 py-1.5 placeholder:text-gray-400 sm:text-sm w-full sm:leading-6"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                        <label htmlFor="description" className="text-sm font-medium w-16 leading-6 text-gray-900">
+                            نبذة :
+                        </label>
+                        <div className='flex-1'>
+                            <textarea
+                                id="description"
+                                name="description"
+                                rows={2}
+                                value={memberEditData?.description}
+                                onChange={(e) => { changeEditHandler(e) }}
+                                placeholder='نبذة عن العضو'
+                                className="block border border-1 border-gray-300  px-3 w-full rounded-md py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                            />
+                        </div>
+                    </div> 
 
                     <div className="flex items-center justify-between">
                         <label htmlFor="cover-photo" className="text-sm w-16 font-medium leading-6 text-gray-900">
@@ -96,7 +138,7 @@ export default function FormEditMember({ item, setOpenEdit }: { item: IMember, s
                                             type="file"
                                             accept="image/*"
                                             multiple
-                                            onChange={(e) => { changeHandler(e) }}
+                                            onChange={(e) => { changeEditHandler(e) }}
                                             className="sr-only" />
                                     </label>
                                 </div>

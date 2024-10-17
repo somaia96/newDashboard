@@ -8,19 +8,26 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import instance from "../api/instance";
 import Alerting from "../components/Complaint/Alert";
-import { IMember } from "@/interfaces";
+import { IMembers } from "../interfaces";
 import Member from "../components/AboutUs/Member";
 import MemberSkeleton from "../components/Skeleton/MemberSkeleton";
 import FormAddSkeleton from "../components/Skeleton/FormAddSkeleton";
 import FormAddMember from "../components/Form/FormsAdd/FormAddMember";
+import { useState } from "react";
 
 const Members = () => {
+  const [refresh, setRefresh] = useState("false")
+
   const { isLoading, error, data } = useQuery({
-    queryKey: ['council-members'],
-    queryFn: async () => {
-      const { data } = await instance.get('/council-members')
+    queryKey: ['council-members', refresh],
+    queryFn: async ({ queryKey }) => {
+      const currentStatus = queryKey[1]; // Access tabId from queryKey
+      if (!currentStatus) return; // Avoid unnecessary initial request
+     const { data } = await instance.get('/council-members')
       return data.data
-    }
+    },
+    enabled: !!refresh,
+
   })
 
   if (isLoading) return (
@@ -43,15 +50,15 @@ const Members = () => {
   return (
     <div className="my-5">
       <div className="container">
-        <FormAddMember />
+        <FormAddMember setRefresh={setRefresh}/>
       </div>
       <div className="mb-10 mt-5 overflow-x-hidden md:overflow-visible">
         <h3 className="text-lg font-bold  text-primary my-5">أعضاء مجلس البلدية:</h3>
         <Carousel className="w-full" dir="ltr">
           <CarouselContent className="-ml-1">
-            {data.map((member: IMember) => (
+            {data.map((member: IMembers) => (
               <CarouselItem key={member.id} className="overflow-hidden p-0 md:p-2 md:basis-1/3">
-                <Member member={member} />
+                <Member  setRefresh={setRefresh} member={member} />
               </CarouselItem>
             ))}
           </CarouselContent>

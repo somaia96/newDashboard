@@ -1,6 +1,6 @@
 import CardNews from "../components/Card";
 import { useState, ChangeEvent } from "react";
-import { INewsApi } from "@/interfaces";
+import { INews, INewsApi } from "@/interfaces";
 import instance from '../api/instance'
 import Alerting from '../components/Complaint/Alert';
 import Pagination from "@mui/material/Pagination";
@@ -53,8 +53,8 @@ const NewsPage = () => {
       <div className="container">
         <FormAddNews />
       </div>
-      {data.slice(Pag.from, Pag.to).map((news: INewsApi) => (
-        <CardNews news={news} key={news.id} url="/news" />
+      {data.slice(Pag.from, Pag.to).map((news: INews) => (
+        <CardNews news={news as INewsApi} key={news.id} url="/news" />
       ))}
       <div className="flex justify-items-center justify-center	">
         <Stack spacing={2}>

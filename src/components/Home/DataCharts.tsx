@@ -1,37 +1,4 @@
-export const dataset = [
-    {
-      paris: 57,
-      month: 'كانون2',
-    },
-    {
-      paris: 52,
-      month: 'شباط',
-    },
-    {
-      paris: 93,
-      month: 'اذار',
-    },
-    {
-      paris: 56,
-      month: 'نيسان',
-    },
-    {
-      paris: 69,
-      month: 'ايار',
-    },
-    {
-      paris: 63,
-      month: 'حزيران',
-    },
-    {
-      paris: 80,
-      month: 'تموز',
-    },
-    {
-      paris: 60,
-      month: 'اب',
-    },
-  ];
+
   export const datasetDecision = [
     {
         decision: 57,
@@ -169,7 +136,9 @@ export const dataset = [
     },
   ];
   
-  export function valueFormatter(value: number | null) {
-    return value;
-  }
-  
+  export const valueFormatter = (value: number | null): string => {
+    if (value === null) {
+      return "N/A"; // Handle null values
+    }
+    return value.toLocaleString(); // Format as locale-specific number
+  };

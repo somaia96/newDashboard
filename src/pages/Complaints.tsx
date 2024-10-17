@@ -14,40 +14,28 @@ import Details from "../components/Complaint/Details";
 import { Dialog } from '@headlessui/react'
 import { Toaster } from "react-hot-toast";
 import { Button } from "../components/ui/button";
-
-interface IComplaint {
-    id: number,
-    name: string,
-    number: string,
-    description: string,
-    status: string,
-    photos: {
-        id: number,
-        photo_url: string,
-    }[],
-    created_at: string,
-}
+import { IComplaints, Status } from "../interfaces";
 
 const pagesize = 9;
 
 export default function Complaints() {
-    const tabs = [{ name: "غير معالجة", value: "unresolved" },
-    { name: "قيد المعالجة", value: "in progress" },
-    { name: "تمت المعالجة", value: "resolved" },
-    { name: "نقل إلى سلة المحذوفات", value: "trash" },
+    const tabs = [{ name: "غير معالجة", value: Status.Unresolved },
+    { name: "قيد المعالجة", value: Status.InProgress },
+    { name: "تمت المعالجة", value: Status.Resolved },
+    { name: "سلة المحذوفات", value: Status.Trash },
     ]
-
-    const [detail, setDetail] = useState({
+    const [refresh, setRefresh] = useState("false")
+    const [detail, setDetail] = useState<IComplaints>({
         id: 0,
         name: "",
         number: "",
         description: "",
-        status: "",
+        status: Status.Resolved,
         created_at: "",
         photos: []
     })
 
-    const [activeTab, setActiveTab] = useState("unresolved")
+    const [activeTab, setActiveTab] = useState("")
     const [filteredComp, setFilteredComp] = useState([]);
 
     const [openDetail, setOpenDetail] = useState(false)
@@ -57,40 +45,34 @@ export default function Complaints() {
         return localStorage.getItem('tokenMunicipality');
     };
     const { isLoading, error, data } = useQuery({
-        queryKey: ['complaint'],
-        queryFn: async () => {
-            const { data } = await instance.get('/complaint', {
+        queryKey: ['complaint', refresh],
+        queryFn: async ({ queryKey }) => {
+            const currentStatus = queryKey[1]; // Access tabId from queryKey
+            if (!currentStatus) return; // Avoid unnecessary initial request
+            const comp = await instance.get('/complaint', {
                 headers: {
                     Authorization: `Bearer ${getToken()}`
                 }
             })
-            setFilteredComp(data.data)
 
-            return data.data
-        }
+            const trash = await instance.get('/complaints/trashed', {
+                headers: {
+                    Authorization: `Bearer ${getToken()}`
+                }
+            })
+            setFilteredComp(comp.data.data)
+            return { comp, trash }
+        },
+        enabled: !!refresh,
+
     })
     const handlActiveTabClick = (tab: string) => {
-        console.log(tab);
-
         setActiveTab(tab);
         if (tab === "trash") {
-            try {
-                (async () => {
-                    const { data } = await instance.get('/complaints/trashed', {
-                        headers: {
-                            Authorization: `Bearer ${getToken()}`
-                        }
-                    })
-                    setFilteredComp(data.data)
-
-                })()
-            } catch (error) {
-                console.log(error);
-
-            }
+            setFilteredComp(data?.trash.data.data)
             return;
         }
-        setFilteredComp(data?.filter((compData: IComplaint) => compData.status === tab));
+        setFilteredComp(data?.comp.data.data.filter((compData: IComplaints) => compData.status === tab));
     };
 
     const [Pag, setPag] = useState({
@@ -98,12 +80,12 @@ export default function Complaints() {
         to: pagesize,
     });
     const handelPagination = (event: ChangeEvent<unknown>, page: number) => {
-        console.log(event);
+        console.log(event ? "" : null);
         const from = (page - 1) * pagesize;
         const to = (page - 1) * pagesize + pagesize;
         setPag({ ...Pag, from: from, to: to });
     };
-    const clickHandler = ({ id, name, number, description, status, created_at, photos }: IComplaint) => {
+    const clickHandler = ({ id, name, number, description, status, created_at, photos }: IComplaints) => {
         setOpenDetail(true)
         setDetail({ id, name, number, description, status, created_at, photos })
     }
@@ -112,10 +94,10 @@ export default function Complaints() {
     if (error) return <Alerting />
 
     return (<div>
-        <h2 className="font-semibold text-xl text-gray-800">صندوق الشكاوي الواردة :</h2>
+        <h2 className="font-semibold text-xl mb-2 text-gray-800">صندوق الشكاوي الواردة :</h2>
 
         <div className='flex lg:justify-center items-center gap-3 py-2'>
-        <h3 className="font-semibold text-gray-800">عرض :</h3>
+            <h3 className="font-semibold text-gray-800">عرض :</h3>
 
             {tabs.map((tab, i) => (
                 <Button key={i}
@@ -125,7 +107,7 @@ export default function Complaints() {
                         : "border-gray-200 bg-white text-gray-800") + ' border-1 border focus-visible:ring-0 py-1 hover:text-white hover:bg-primary md:text-lg'}>{tab.name}</Button>
             ))}
         </div>
-        <Card className="h-full w-full mt-5">
+        <Card className="h-full w-full mt-4">
             <Toaster />
             {/* Modal Edit Item */}
             <Dialog open={openDetail} onClose={setOpenDetail} className="relative z-10 w-full">
@@ -136,7 +118,7 @@ export default function Complaints() {
                     <Dialog.Panel
                         className="relative md:max-h-3xl md:max-w-2xl transform overflow-hidden rounded-3xl bg-white shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
                     >
-                        <Details tabs={tabs} setOpenDetail={setOpenDetail} data={detail} />
+                        <Details setRefresh={setRefresh} tabs={tabs} setOpenDetail={setOpenDetail} data={detail} />
 
                     </Dialog.Panel>
                 </div>
@@ -161,8 +143,8 @@ export default function Complaints() {
                     </tr>
                 </thead>
                 <tbody>
-                    {filteredComp.slice(Pag.from, Pag.to).map(({ id, name, number, description, status, created_at, photos }: IComplaint, index: number) => {
-                        const isLast = index === data.length - 1;
+                    {filteredComp.slice(Pag.from, Pag.to).map(({ id, name, number, description, status, created_at, photos }: IComplaints, index: number) => {
+                        const isLast = index === filteredComp.length - 1;
                         const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
 
                         return (
@@ -224,7 +206,7 @@ export default function Complaints() {
             <Stack spacing={2}>
                 <Pagination
                     onChange={handelPagination}
-                    count={Math.ceil(data.length / pagesize)}
+                    count={Math.ceil(filteredComp.length / pagesize)}
                     color="primary"
                     shape="rounded"
                     renderItem={(item) => (

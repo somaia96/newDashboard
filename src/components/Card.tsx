@@ -4,7 +4,7 @@ import {
   CardBody,
   Typography,
 } from "@material-tailwind/react";
-import { INewsApi } from "../interfaces";
+import { IDecisions, IEvents, INews, INewsApi, IServices, ITabs } from "../interfaces";
 import { txtSlicer } from "../utils/functions";
 import { useState } from "react";
 import { Dialog } from '@headlessui/react'
@@ -14,21 +14,17 @@ import FormEditNews from "./Form/FormEdit/FormEditNews";
 import FormEditServ from "./Form/FormEdit/FormEditServ";
 import FormEditEvents from "./Form/FormEdit/FormEditEvent";
 import FormEditDecision from "./Form/FormEdit/FormEditDecision";
-interface IEventTabs {
-  id: number,
-  name: string,
-}
+
 interface IProps {
   news: INewsApi,
   order?: number,
   noPic?: boolean,
   url:string,
-  tabs?:IEventTabs[],
+  tabs?:ITabs[],
 }
 export default function CardNews({ noPic = true, order = 0, news,url,tabs }: IProps) {
   const [openDel, setOpenDel] = useState(false)
   const [openEdit, setOpenEdit] = useState(false)
-
   const [itemID, setItemID] = useState<number>(0)
 
 
@@ -110,10 +106,10 @@ export default function CardNews({ noPic = true, order = 0, news,url,tabs }: IPr
           <Dialog.Panel
             className="relative transform overflow-hidden rounded-lg bg-white shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
           >
-            { (url === "/news") ? <FormEditNews item={news} setOpenEdit={setOpenEdit}/>
-            : (url === "/services") ? <FormEditServ item={news} setOpenEdit={setOpenEdit} tabs={tabs}/>
-            : (url === "/activity") ? <FormEditEvents item={news} setOpenEdit={setOpenEdit} tabs={tabs}/>
-            : (url === "/decision") ? <FormEditDecision item={news} setOpenEdit={setOpenEdit}/>
+            { (url === "/news") ? <FormEditNews item={news as INews} setOpenEdit={setOpenEdit}/>
+            : (url === "/services") ? <FormEditServ item={news as IServices} setOpenEdit={setOpenEdit} tabs={tabs}/>
+            : (url === "/activity") ? <FormEditEvents item={news as IEvents} setOpenEdit={setOpenEdit} tabs={tabs}/>
+            : (url === "/decision") ? <FormEditDecision item={news as IDecisions} setOpenEdit={setOpenEdit}/>
             :null }
           </Dialog.Panel>
         </div>
@@ -124,8 +120,8 @@ export default function CardNews({ noPic = true, order = 0, news,url,tabs }: IPr
         className={(order != 0 ? "hidden md:block " : "") + " relative m-0 w-full lg:w-1/4 lg:shrink-0 lg:rounded-l-none"}
         style={order != 0 ? { order: order, marginRight: "auto" } : {}}
       >
-        {news.img ? <img
-          src={news.img}
+        {news.photos ? <img
+          src={typeof(news.photos[0]) == "string"?news.photos[0]:""}
           alt="card-image"
           className="lg:h-[224px] w-full object-cover"
         /> : <img
@@ -147,7 +143,7 @@ export default function CardNews({ noPic = true, order = 0, news,url,tabs }: IPr
                         تعديل
                     </button>
                     <button
-                        onClick={()=>handleDelete(news.id)}
+                        onClick={()=>handleDelete(news.id!)}
                         className="px-4 my-3 rounded-lg border-2 border-red-800 py-2 font-semibold text-red-800 shadow-sm hover:bg-red-500 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
                         حذف
@@ -158,12 +154,11 @@ export default function CardNews({ noPic = true, order = 0, news,url,tabs }: IPr
           {timestamp.toISOString().split('T')[0]}
         </Typography>}
         <div color="gray" className="mb-3 text-base text-gray-900">
-          {typeof (news.description) == "string" ? txtSlicer(news.description, (news.photos ? undefined : 250)) : <ol type="1" className="list-decimal list-inside text-gray-700">
-            {news.description.map((item, i) => <li key={i}>{item}</li>)}</ol>}
+          {txtSlicer(news.description, (news.photos ? undefined : 250))}
         </div>
         {news.photos ? <div className="flex max-w-full justify-center items-center md:justify-start w-full gap-3 mb-5 md:mb-0 -order-1 md:order-12">
           {news.photos.map((img, i) => (
-            <img className="w-auto h-14" key={i} src={img} />
+            <img className="w-auto h-14" key={i} src={typeof(img)=="string"?img:""} />
           ))}
         </div> : null
 

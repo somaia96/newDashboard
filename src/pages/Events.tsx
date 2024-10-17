@@ -1,6 +1,5 @@
 import CardNews from "../components/Card";
 import { useState, ChangeEvent } from "react";
-import { INewsApi } from "@/interfaces";
 import instance from '../api/instance'
 import { Button } from '../components/ui/button';
 import Alerting from '../components/Complaint/Alert';
@@ -15,17 +14,14 @@ import CardSkeleton from "../components/Skeleton/CardSkeleton";
 import TabSkeleton from "../components/Skeleton/TabSkeleton";
 import FormAddEvents from "../components/Form/FormsAdd/FormAddEvent";
 import FormAddSkeleton from "../components/Skeleton/FormAddSkeleton";
+import { IEvents, INewsApi, ITabs } from "../interfaces";
 
-interface IEventTabs {
-  id: number,
-  name: string,
-}
 const pagesize = 2;
 
 const Events = () => {
 
   const [filteredEvents, setFilteredEvents] = useState([]);
-  const [activeTab, setActiveTab] = useState<string>("");
+  const [activeTab, setActiveTab] = useState<number>(0);
   const { isLoading, error, data } = useQuery({
     queryKey: ['activityData'],
     queryFn: async () => {
@@ -39,9 +35,9 @@ const Events = () => {
 
   const tabs = data?.tabRes.data.data;
 
-  const handlActiveTabClick = (tab: string) => {
+  const handlActiveTabClick = (tab: number) => {
     setActiveTab(tab);
-    setFilteredEvents(data?.eventRes.data.data.filter((eveData: INewsApi) => eveData.activity_type_name === tab));
+    setFilteredEvents(data?.eventRes.data.data.filter((eveData: IEvents) => eveData.activity_type_id === tab));
   };
 
   const [Pag, setPag] = useState({
@@ -76,16 +72,16 @@ const Events = () => {
       </div>
       <div className="font-header md:text-3xl font-bold text-center text-primary">الفعاليات</div>
       <div className='flex lg:justify-center items-center gap-3 py-2'>
-        {tabs.map((tab: IEventTabs) => (
+        {tabs.map((tab: ITabs) => (
           <Button key={tab.id}
-            onClick={() => handlActiveTabClick(tab.name)}
-            className={(activeTab === tab.name
+            onClick={() => handlActiveTabClick(tab.id!)}
+            className={(activeTab === tab.id
               ? "bg-primary text-white border-primary"
               : "border-gray-200 bg-white text-gray-800") + ' w-28 md:w-36 border-1 border focus-visible:ring-0 py-1 hover:text-white hover:bg-primary md:text-lg'}>{txtSlicer(tab.name, 12)}</Button>
         ))}
       </div>
-      {filteredEvents.slice(Pag.from, Pag.to).map((news: INewsApi) => (
-        <CardNews news={news} key={news.id} url="/activity" tabs={tabs} />
+      {filteredEvents.slice(Pag.from, Pag.to).map((news: IEvents) => (
+        <CardNews news={news as INewsApi} key={news.id} url="/activity" tabs={tabs} />
       ))}
       <div className="flex justify-items-center justify-center	">
         <Stack spacing={2}>

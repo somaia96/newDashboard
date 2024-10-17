@@ -4,44 +4,45 @@ import toast, { Toaster } from 'react-hot-toast';
 import { PhotoIcon } from '@heroicons/react/24/solid'
 import { Button } from '../../ui/button';
 import { txtSlicer } from '../../../utils/functions';
+import { IEvents, ITabs } from '../../../interfaces';
 
-interface IEventTabs {
-    id: number,
-    name: string,
-}
-export default function FormAddEvents({ tabs }: { tabs: IEventTabs[] }) {
+
+export default function FormAddEvents({ tabs }: { tabs: ITabs[] }) {
     let todayDate = new Date()
-    const [activeTab, setActiveTab] = useState("")
-    const [eventData, setEventData] = useState({
+    const [activeTab, setActiveTab] = useState(0)
+    const [eventData, setEventData] = useState<IEvents>({
         title: "",
         description: "",
         photos: [],
-        activity_type_name: 'events',
+        activity_type_id: 1,
         activity_date: todayDate.toISOString().split('T')[0],
-
     })
-    const handleTabClick = (tabName: string) => {
-        setActiveTab(tabName);
-        setEventData((prev) => ({ ...prev, activity_type_name: tabName }));
+    const handleTabClick = (tab: number) => {
+        setActiveTab(tab);
+        setEventData((prev) => ({ ...prev, activity_type_id: tab }));
     }
 
     const getToken = () => {
         return localStorage.getItem('tokenMunicipality');
     };
 
-    const changeHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
+    const changeAddHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        const files = e.target.files;
 
-        if (name == "photos") {
-            const eventPhotos = Array.from(files);
+        if (name == "photo") {
+            const files: FileList | null = (e.target as HTMLInputElement).files;
+            const filesArray = files ?? [];
+            if (filesArray?.length > 0) {
+            const eventPhotos = Array.from(filesArray);
+               
             setEventData((prev) => ({ ...prev, photos: eventPhotos }));
+            }
         } else {
             setEventData((prev) => ({ ...prev, [name]: value }));
         }
     };
 
-    const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
+    const submitAddHandler = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         try {
             let res = await instance.post("/activity", eventData, {
@@ -68,7 +69,7 @@ export default function FormAddEvents({ tabs }: { tabs: IEventTabs[] }) {
 
     return (
         <div className='flex gap-3 p-5 my-10 rounded-3xl bg-white'>
-            <form className='w-full rounded-xl' onSubmit={(e) => submitHandler(e)}>
+            <form className='w-full rounded-xl' onSubmit={(e) => submitAddHandler(e)}>
                 <Toaster position="top-center" reverseOrder={false} />
                 <div className="space-y-2">
                     <h2 className='font-bold text-xl text-center text-primary mb-5'>اضافة فعالية جديدة</h2>
@@ -78,11 +79,11 @@ export default function FormAddEvents({ tabs }: { tabs: IEventTabs[] }) {
                         الفئة
                         </label>
                         <div className="flex rounded-md shadow-sm py-1 flex-1 gap-2" style={{scrollbarWidth:"thin", scrollbarColor: "#cfcfcfb8 transparent" }}>
-                            {tabs.map((tab: IEventTabs) => (
+                            {tabs.map((tab: ITabs) => (
                                 <Button key={tab.id}
                                     type='button'
-                                    onClick={() => handleTabClick(tab.name)}
-                                    className={(activeTab === tab.name
+                                    onClick={() => handleTabClick(tab.id!)}
+                                    className={(activeTab === tab.id
                                         ? "bg-primary text-white border-primary"
                                         : "border-gray-200 bg-white text-gray-800") + ' w-28 border-1 border focus-visible:ring-0 py-1  hover:text-white hover:bg-primary text-base'}
                                 >{txtSlicer(tab.name, 12)}</Button>
@@ -102,7 +103,7 @@ export default function FormAddEvents({ tabs }: { tabs: IEventTabs[] }) {
                                 placeholder="عنوان الفعالية"
                                 autoComplete="title"
                                 value={eventData?.title}
-                                onChange={(e) => { changeHandler(e) }}
+                                onChange={(e) => { changeAddHandler(e) }}
                                 className="bg-white block border border-1 border-gray-300 flex-1 rounded-lg px-3 py-1.5 placeholder:text-gray-400 sm:text-sm w-full sm:leading-6"
                             />
                         </div>
@@ -119,7 +120,7 @@ export default function FormAddEvents({ tabs }: { tabs: IEventTabs[] }) {
                                 type="date"
                                 autoComplete="date"
                                 value={eventData.activity_date}
-                                onChange={(e) => { changeHandler(e) }}
+                                onChange={(e) => { changeAddHandler(e) }}
                                 className="bg-white block border border-1 border-gray-300  flex-1 rounded-lg px-3 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 sm:text-sm w-full sm:leading-6"
                             />
                         </div>
@@ -135,7 +136,7 @@ export default function FormAddEvents({ tabs }: { tabs: IEventTabs[] }) {
                                 name="description"
                                 rows={2}
                                 value={eventData?.description}
-                                onChange={(e) => { changeHandler(e) }}
+                                onChange={(e) => { changeAddHandler(e) }}
                                 placeholder='نص الفعالية'
                                 className="block border border-1 border-gray-300  px-3 w-full rounded-md py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6"
                             />
@@ -151,17 +152,17 @@ export default function FormAddEvents({ tabs }: { tabs: IEventTabs[] }) {
                                 <PhotoIcon aria-hidden="true" className="mx-auto h-12 w-12 text-gray-300" />
                                 <div className="items-center justify-center flex text-xs leading-6 text-gray-600">
                                     <label
-                                        htmlFor="photos"
+                                        htmlFor="photo"
                                         className="relative cursor-pointer rounded-md bg-white font-semibold text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
                                     >
                                         <span>اضغط لإضافة صور أو اسحب الصور وافلت هنا</span>
                                         <input
-                                            id="photos"
-                                            name="photos"
+                                            id="photo"
+                                            name="photo"
                                             type="file"
                                             accept="image/*"
                                             multiple
-                                            onChange={(e) => { changeHandler(e) }}
+                                            onChange={(e) => { changeAddHandler(e) }}
                                             className="sr-only" />
                                     </label>
                                 </div>

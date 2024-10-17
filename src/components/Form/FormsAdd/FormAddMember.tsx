@@ -2,33 +2,42 @@ import { FormEvent, ChangeEvent, useState } from 'react';
 import instance from '../../../api/instance'
 import toast, { Toaster } from 'react-hot-toast';
 import { PhotoIcon } from '@heroicons/react/24/solid'
+import { IMembers } from '../../../interfaces';
 
-export default function FormAddMember() {
-    const [memberData, setMemberData] = useState({
+export default function FormAddMember({ setRefresh}:{setRefresh:(val:string)=>void}) {
+    const [memberAddData, setMemberAddData] = useState<IMembers>({
         name: "",
-        photos: [],
+        job_title:"",
+        description:"",
+        photo: "",
     })
 
     const getToken = () => {
         return localStorage.getItem('tokenMunicipality');
     };
 
-    const changeHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
+    const changeAddHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        const files = e.target.files;
-    
-        if (name == "photos") {
-          const newPhotos = Array.from(files);
-          setMemberData((prev) => ({ ...prev, photos: newPhotos }));
+        if (name == "photo") {
+            const files: FileList | null = (e.target as HTMLInputElement).files;
+            const filesArray = files ?? [];
+            if (filesArray?.length > 0) {
+               
+          const newAddPhotos = Array.from(filesArray);
+          console.log(newAddPhotos[0]);
+          
+          setMemberAddData((prev) => ({ ...prev, photo: newAddPhotos[0] }));
+            }
         } else {
-          setMemberData((prev) => ({ ...prev, [name]: value }));
+          setMemberAddData((prev) => ({ ...prev, [name]: value }));
         }
       };
-
+      
     const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
+        
         try {
-            let res = await instance.post("/council-members", memberData, {
+            let res = await instance.post("/council-members", memberAddData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                     Authorization: `Bearer ${getToken()}`,
@@ -41,6 +50,8 @@ export default function FormAddMember() {
                 className: 'bg-blue-100',
                 icon: '👏',
             }) : null;
+            setRefresh("true")
+
         } catch (error) {
             console.error('Error fetching news:', error);
             toast.error('حدث خطأ أثناء ارسال الطلب', {
@@ -68,12 +79,48 @@ export default function FormAddMember() {
                                 type="text"
                                 placeholder="اسم العضو"
                                 autoComplete="name"
-                                value={memberData?.name}
-                                onChange={(e) => { changeHandler(e) }}
+                                value={memberAddData?.name}
+                                onChange={(e) => { changeAddHandler(e) }}
                                 className="bg-white block border border-1 border-gray-300 flex-1 rounded-lg px-3 py-1.5 placeholder:text-gray-400 sm:text-sm w-full sm:leading-6"
                             />
                         </div>
                     </div>
+
+                   <div className="flex items-center justify-between">
+                        <label htmlFor="job" className="text-sm font-medium w-16 leading-6 text-gray-900">
+                            المنصب :
+                        </label>
+                        <div className="flex rounded-md shadow-sm flex-1">
+                            <input
+                                id="job"
+                                name="job_title"
+                                type="text"
+                                placeholder="المنصب"
+                                autoComplete="job"
+                                value={memberAddData?.job_title}
+                                onChange={(e) => { changeAddHandler(e) }}
+                                className="bg-white block border border-1 border-gray-300 flex-1 rounded-lg px-3 py-1.5 placeholder:text-gray-400 sm:text-sm w-full sm:leading-6"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                        <label htmlFor="description" className="text-sm font-medium w-16 leading-6 text-gray-900">
+                            نبذة :
+                        </label>
+                        <div className='flex-1'>
+                            <textarea
+                                id="description"
+                                name="description"
+                                rows={2}
+                                value={memberAddData?.description}
+                                onChange={(e) => { changeAddHandler(e) }}
+                                placeholder='نبذة عن العضو'
+                                className="block border border-1 border-gray-300  px-3 w-full rounded-md py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                            />
+                        </div>
+                    </div> 
+
 
                     <div className="flex items-center justify-between">
                         <label htmlFor="cover-photo" className="text-sm w-16 font-medium leading-6 text-gray-900">
@@ -84,17 +131,16 @@ export default function FormAddMember() {
                                 <PhotoIcon aria-hidden="true" className="mx-auto h-12 w-12 text-gray-300" />
                                 <div className="items-center justify-center flex text-xs leading-6 text-gray-600">
                                     <label
-                                        htmlFor="photos"
+                                        htmlFor="photo"
                                         className="relative cursor-pointer rounded-md bg-white font-semibold text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
                                     >
                                         <span>اضغط لإضافة صور أو اسحب الصور وافلت هنا</span>
                                         <input
-                                            id="photos"
-                                            name="photos"
+                                            id="photo"
+                                            name="photo"
                                             type="file"
                                             accept="image/*"
-                                            multiple
-                                            onChange={(e) => { changeHandler(e) }}
+                                            onChange={(e) => { changeAddHandler(e) }}
                                             className="sr-only" />
                                     </label>
                                 </div>

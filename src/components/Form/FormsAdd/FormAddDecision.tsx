@@ -2,10 +2,12 @@ import { FormEvent, ChangeEvent, useState } from 'react';
 import instance from '../../../api/instance'
 import toast, { Toaster } from 'react-hot-toast';
 import { PhotoIcon } from '@heroicons/react/24/solid'
+import { IDecisions } from '../../../interfaces';
+
 
 export default function FormAddDecision() {
     let todayDate = new Date()
-    const [descData, setDescData] = useState({
+    const [descData, setDescData] = useState<IDecisions>({
         title: "",
         description: "",
         photos: [],
@@ -19,11 +21,15 @@ export default function FormAddDecision() {
 
     const changeHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        const files = e.target.files;
 
         if (name == "photos") {
-            const descPhotos = Array.from(files);
+            const files: FileList | null = (e.target as HTMLInputElement).files;
+            const filesArray = files ?? [];
+            if (filesArray?.length > 0) {
+               
+            const descPhotos = Array.from(filesArray);
             setDescData((prev) => ({ ...prev, photos: descPhotos }));
+            }
         } else {
             setDescData((prev) => ({ ...prev, [name]: value }));
         }

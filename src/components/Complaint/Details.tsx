@@ -2,46 +2,35 @@ import { useState } from "react"
 import { Button } from "../ui/button"
 import instance from "../../api/instance"
 import toast from "react-hot-toast"
-
-interface IComplaint {
-    id: number,
-    name: string,
-    number: string,
-    description: string,
-    status: string,
-    photos: {
-        id: number,
-        photo_url: string,
-    }[],
-    created_at: string,
+import { IComplaints, Status } from "../../interfaces"
+interface IPutComp{
+    status:Status,
+    _method:string,
 }
-const Details = ({tabs, setOpenDetail, data }: {tabs:{ name: string; value: string; }[], setOpenDetail: (val: boolean) => void, data: IComplaint }) => {
-    const [compData, setCompData] = useState({
-        name: data.name,
-        number: data.number,
-        description: data.description,
+const Details = ({setRefresh,tabs, setOpenDetail, data }: {setRefresh:(val:string)=>void,tabs:{ name: string; value: Status; }[], setOpenDetail: (val: boolean) => void, data: IComplaints }) => {
+    const [compData, setCompData] = useState<IPutComp>({
         status: data.status,
-        photos: [...data.photos],
         _method: "PUT",
     })
 
     const [activeTab, setActiveTab] = useState(data.status)
 
-    const handlActiveTabClick = (tab: string) => {
+    const handlActiveTabClick = (tab: Status) => {
         setActiveTab(tab);
-        setCompData((prev) => {
+        if(tab !== Status.Trash){
+            setCompData((prev:IPutComp) => {
             return {
                 ...prev,
                 status: tab
             }
-        })
+        })}
     };
     const handleCancel = () => {
-        setActiveTab("unresolved");
-        setCompData((prev) => {
+        setActiveTab(Status.Unresolved);
+        setCompData((prev:IPutComp) => {
             return {
                 ...prev,
-                status: "unresolved"
+                status: Status.Unresolved
             }
         })
         setOpenDetail(false)
@@ -50,8 +39,34 @@ const Details = ({tabs, setOpenDetail, data }: {tabs:{ name: string; value: stri
         return localStorage.getItem('tokenMunicipality');
     };
 
-    const handleSave = async (id: number) => {
-        console.log(compData, id,);
+    const handleSave = async (tab:string, id: number) => {
+        
+        if(tab === "trash"){         
+        try {
+            let res = await instance.delete(`/complaint/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${getToken()}`,
+                }
+            });
+            (res.status === 200 || res.status === 201) ? toast.success('تم ارسال الطلب ', {
+                duration: 2000,
+                position: 'top-center',
+                className: 'bg-blue-100',
+                icon: '👏',
+            }) : null;
+            setOpenDetail(false)
+            setRefresh("true")
+        } catch (error) {
+            console.error('Error fetching news:', error);
+            toast.error('حدث خطأ أثناء ارسال الطلب', {
+                duration: 2000,
+                position: 'top-center',
+                className: 'bg-red-100',
+            });
+        }
+
+        return;
+        }
 
         try {
             let res = await instance.post(`/complaint/${id}`, compData, {
@@ -67,6 +82,7 @@ const Details = ({tabs, setOpenDetail, data }: {tabs:{ name: string; value: stri
                 icon: '👏',
             }) : null;
             setOpenDetail(false)
+            setRefresh("true")
         } catch (error) {
             console.error('Error fetching news:', error);
             toast.error('حدث خطأ أثناء ارسال الطلب', {
@@ -75,7 +91,6 @@ const Details = ({tabs, setOpenDetail, data }: {tabs:{ name: string; value: stri
                 className: 'bg-red-100',
             });
         }
-
     };
 
     return (
@@ -104,7 +119,7 @@ const Details = ({tabs, setOpenDetail, data }: {tabs:{ name: string; value: stri
                     <div className="overflow-hidden w-full max-h-80">
                         {
                             data.photos?.length > 0 ? 
-                     <img className="w-full h-auto" src={data.photos[0].photo_url} alt="" />
+                     <img className="w-full h-auto" src={data.photos[0]} alt="" />
 :
                      <img className="w-full h-auto" src="/images/empty.jpg" alt="" /> 
 
@@ -128,7 +143,7 @@ const Details = ({tabs, setOpenDetail, data }: {tabs:{ name: string; value: stri
             </div>
             <div className='flex justify-center gap-3 mt-5 w-full px-10'>
                 <button
-                    onClick={() => handleSave(data.id)}
+                    onClick={() => handleSave(activeTab,data.id!)}
                     className="flex-1 rounded-lg bg-primary py-2 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
                     حفظ التعديلات

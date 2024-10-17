@@ -3,15 +3,11 @@ import instance from '../../../api/instance'
 import toast, { Toaster } from 'react-hot-toast';
 import { txtSlicer } from '../../../utils/functions';
 import { Button } from '../../ui/button';
-import { INewsApi } from '@/interfaces';
+import { IServices, ITabs } from '@/interfaces';
 
 
-interface IEventTabs {
-    id: number,
-    name: string,
-}
-export default function FormEditServ({item,setOpenEdit,tabs}:{item:INewsApi,setOpenEdit:(val:boolean)=>void,tabs: IEventTabs[]}) {
-    const [activeTab, setActiveTab] = useState(item.service_category_id)
+export default function FormEditServ({item,setOpenEdit,tabs}:{item:IServices,setOpenEdit:(val:boolean)=>void,tabs?: ITabs[]}) {
+    const [activeTab, setActiveTab] = useState(+item.service_category_id)
     const [servData, setServData] = useState({
         title: item.title,
         description: item.description,
@@ -20,13 +16,13 @@ export default function FormEditServ({item,setOpenEdit,tabs}:{item:INewsApi,setO
     })
     const handleTabClick = (tabNum: number) => {
         setActiveTab(tabNum);
-        setServData((prev) => ({ ...prev, service_category_id: tabNum }));
+        setServData((prev) => ({ ...prev, service_category_id: `${tabNum}` }));
     }
     const getToken = () => {
         return localStorage.getItem('tokenMunicipality');
     };
 
-    const changeHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
+    const changeEditHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setServData((prev) => {
             return {
@@ -36,7 +32,7 @@ export default function FormEditServ({item,setOpenEdit,tabs}:{item:INewsApi,setO
         })
     }
 
-    const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
+    const submitEditHandler = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         try {
 
@@ -67,7 +63,7 @@ export default function FormEditServ({item,setOpenEdit,tabs}:{item:INewsApi,setO
 
     return (
         <div className='flex gap-3 p-5 my-10 rounded-3xl bg-white'>
-            <form className='w-full rounded-xl' onSubmit={(e) => submitHandler(e)}>
+            <form className='w-full rounded-xl' onSubmit={(e) => submitEditHandler(e)}>
                 <Toaster position="top-center" reverseOrder={false} />
                 <div className="space-y-2">
                     <h2 className='font-bold text-xl text-center text-primary mb-5'>تعديل الخدمة</h2>
@@ -77,10 +73,10 @@ export default function FormEditServ({item,setOpenEdit,tabs}:{item:INewsApi,setO
                             النوع
                         </label>
                         <div style={{scrollbarWidth:"thin", scrollbarColor: "#cfcfcfb8 transparent" }} className="overflow-x-scroll py-1 flex rounded-md shadow-sm flex-1 gap-2">
-                            {tabs.map((tab: IEventTabs) => (
+                            {tabs?.map((tab: ITabs) => (
                                 <Button key={tab.id}
                                     type='button'
-                                    onClick={() => handleTabClick(tab.id)}
+                                    onClick={() => handleTabClick(tab.id!)}
                                     className={(activeTab === tab.id
                                         ? "bg-primary text-white border-primary"
                                         : "border-gray-200 bg-white text-gray-800") + ' w-28 border-1 border focus-visible:ring-0 py-1  hover:text-white hover:bg-primary text-base'}
@@ -102,7 +98,7 @@ export default function FormEditServ({item,setOpenEdit,tabs}:{item:INewsApi,setO
                                 placeholder='عنوان الخدمة'
                                 autoComplete="title"
                                 value={servData?.title}
-                                onChange={(e) => { changeHandler(e) }}
+                                onChange={(e) => { changeEditHandler(e) }}
                                 className="bg-white block border border-1 border-gray-300 flex-1 rounded-lg px-3 py-1.5 placeholder:text-gray-400 sm:text-sm w-full sm:leading-6"
                             />
                         </div>
@@ -118,7 +114,7 @@ export default function FormEditServ({item,setOpenEdit,tabs}:{item:INewsApi,setO
                                 name="description"
                                 rows={2}
                                 value={servData?.description}
-                                onChange={(e) => { changeHandler(e) }}
+                                onChange={(e) => { changeEditHandler(e) }}
                                 placeholder='نص الخدمة'
                                 className="block border border-1 border-gray-300  px-3 w-full rounded-md py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6"
                             />

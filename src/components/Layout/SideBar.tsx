@@ -33,10 +33,10 @@ const SideBar = () => {
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-col py-10 space-y-3 border-y-2 border-gray-300 items-center justify-center gap-4 text-lg">
+                <div className="flex flex-col py-5 space-y-3 border-y-2 border-gray-300 items-center justify-center gap-4 text-lg">
                     {navLink.map((item, i) => <NavLink key={i} to={item.link}>{item.text}</NavLink>)}
                 </div>
-                <Button onClick={logOutHandler} className="bg-transparent p-3 border-0 ring-0 shadow-none p-0 text-gray-600 text-xl" >
+                <Button onClick={logOutHandler} className="bg-transparent border-0 ring-0 shadow-none p-0 text-gray-600 text-xl" >
                 <i className="fa-solid fa-right-from-bracket mx-4"></i> 
                     تسجيل الخروج
                     </Button>

@@ -4,45 +4,46 @@ import toast, { Toaster } from 'react-hot-toast';
 import { PhotoIcon } from '@heroicons/react/24/solid'
 import { Button } from '../../ui/button';
 import { txtSlicer } from '../../../utils/functions';
-import { INewsApi } from '@/interfaces';
+import { IEvents, ITabs } from '../../../interfaces';
 
-interface IEventTabs {
-    id: number,
-    name: string,
-}
-export default function FormEditEvents({item,setOpenEdit,tabs}:{item:INewsApi,setOpenEdit:(val:boolean)=>void,tabs: IEventTabs[]}) {
 
-    const [activeTab, setActiveTab] = useState(item.activity_type_name)
-    const [eventData, setEventData] = useState({
+export default function FormEditEvents({item,setOpenEdit,tabs}:{item:IEvents,setOpenEdit:(val:boolean)=>void,tabs?: ITabs[]}) {
+
+    const [activeTab, setActiveTab] = useState(item.activity_type_id)
+    const [eventData, setEventData] = useState<IEvents>({
         title: item.title,
         description: item.description,
         photos: [],
-        activity_type_name: item.activity_type_name,
+        activity_type_id: item.activity_type_id,
         activity_date: item.activity_date,
         _method:"PUT",
     })
-    const handleTabClick = (tabName: string) => {
-        setActiveTab(tabName);
-        setEventData((prev) => ({ ...prev, activity_type_name: tabName }));
+    const handleTabClick = (tab: number) => {
+        setActiveTab(tab);
+        setEventData((prev) => ({ ...prev, activity_type_id: tab }));
     }
 
     const getToken = () => {
         return localStorage.getItem('tokenMunicipality');
     };
 
-    const changeHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
+    const changeEditHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        const files = e.target.files;
 
         if (name == "photos") {
-            const eventPhotos = Array.from(files);
+            const files: FileList | null = (e.target as HTMLInputElement).files;
+            const filesArray = files ?? [];
+            if (filesArray?.length > 0) {
+               
+            const eventPhotos = Array.from(filesArray);
             setEventData((prev) => ({ ...prev, photos: eventPhotos }));
+            }
         } else {
             setEventData((prev) => ({ ...prev, [name]: value }));
         }
     };
 
-    const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
+    const submitEditHandler = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         try {
             let res = await instance.post(`/activity/${item.id}`, eventData, {
@@ -70,7 +71,7 @@ export default function FormEditEvents({item,setOpenEdit,tabs}:{item:INewsApi,se
 
     return (
         <div className='flex gap-3 p-5 my-10 rounded-3xl bg-white'>
-            <form className='w-full rounded-xl' onSubmit={(e) => submitHandler(e)}>
+            <form className='w-full rounded-xl' onSubmit={(e) => submitEditHandler(e)}>
                 <Toaster position="top-center" reverseOrder={false} />
                 <div className="space-y-2">
                     <h2 className='font-bold text-xl text-center text-primary mb-5'>تعديل الفعالية</h2>
@@ -80,11 +81,11 @@ export default function FormEditEvents({item,setOpenEdit,tabs}:{item:INewsApi,se
                             النوع
                         </label>
                         <div className="flex rounded-md shadow-sm py-1 flex-1 gap-2" style={{scrollbarWidth:"thin", scrollbarColor: "#cfcfcfb8 transparent" }}>
-                            {tabs.map((tab: IEventTabs) => (
+                            {tabs?.map((tab: ITabs) => (
                                 <Button key={tab.id}
                                     type='button'
-                                    onClick={() => handleTabClick(tab.name)}
-                                    className={(activeTab === tab.name
+                                    onClick={() => handleTabClick(tab.id!)}
+                                    className={(activeTab === tab.id
                                         ? "bg-primary text-white border-primary"
                                         : "border-gray-200 bg-white text-gray-800") + ' w-28 border-1 border focus-visible:ring-0 py-1  hover:text-white hover:bg-primary text-base'}
                                 >{txtSlicer(tab.name, 12)}</Button>
@@ -104,7 +105,7 @@ export default function FormEditEvents({item,setOpenEdit,tabs}:{item:INewsApi,se
                                 placeholder="عنوان الفعالية"
                                 autoComplete="title"
                                 value={eventData?.title}
-                                onChange={(e) => { changeHandler(e) }}
+                                onChange={(e) => { changeEditHandler(e) }}
                                 className="bg-white block border border-1 border-gray-300 flex-1 rounded-lg px-3 py-1.5 placeholder:text-gray-400 sm:text-sm w-full sm:leading-6"
                             />
                         </div>
@@ -121,7 +122,7 @@ export default function FormEditEvents({item,setOpenEdit,tabs}:{item:INewsApi,se
                                 type="date"
                                 autoComplete="date"
                                 value={eventData.activity_date}
-                                onChange={(e) => { changeHandler(e) }}
+                                onChange={(e) => { changeEditHandler(e) }}
                                 className="bg-white block border border-1 border-gray-300  flex-1 rounded-lg px-3 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 sm:text-sm w-full sm:leading-6"
                             />
                         </div>
@@ -137,7 +138,7 @@ export default function FormEditEvents({item,setOpenEdit,tabs}:{item:INewsApi,se
                                 name="description"
                                 rows={2}
                                 value={eventData?.description}
-                                onChange={(e) => { changeHandler(e) }}
+                                onChange={(e) => { changeEditHandler(e) }}
                                 placeholder='نص الفعالية'
                                 className="block border border-1 border-gray-300  px-3 w-full rounded-md py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6"
                             />
@@ -163,7 +164,7 @@ export default function FormEditEvents({item,setOpenEdit,tabs}:{item:INewsApi,se
                                             type="file"
                                             accept="image/*"
                                             multiple
-                                            onChange={(e) => { changeHandler(e) }}
+                                            onChange={(e:ChangeEvent<HTMLInputElement>) => {changeEditHandler(e)}}
                                             className="sr-only" />
                                     </label>
                                 </div>

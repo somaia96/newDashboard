@@ -1,6 +1,6 @@
 import CardNews from '../components/Card';
-import { ChangeEvent, MouseEvent, useState } from "react";
-import { INewsApi } from "@/interfaces";
+import { ChangeEvent, useState } from "react";
+import { INewsApi, IServices ,ITabs } from "@/interfaces";
 import { Button } from '../components/ui/button';
 import Alerting from '../components/Complaint/Alert';
 import instance from '../api/instance'
@@ -13,10 +13,7 @@ import { Dialog } from '@headlessui/react'
 import toast from 'react-hot-toast';
 import FormAddSkeleton from '../components/Skeleton/FormAddSkeleton';
 
-interface IEventTabs {
-  id: number,
-  name: string,
-}
+
 const Services = () => {
   // tabs
   const [nameTab, setNameTab] = useState("");
@@ -47,7 +44,6 @@ const Services = () => {
   // add tab
   const changeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setNameTab(e.target.value)
-
   }
   // cancel add tab
   const cancelHandler = () => {
@@ -87,7 +83,7 @@ const Services = () => {
   // delete tabs temp
   const addToDelArr = (idDel: number) => {
     setDelArr((prev: number[]) => [idDel, ...prev])
-    setAddArr((prev) => prev.filter((item: IEventTabs) => item.id !== idDel))
+    setAddArr((prev) => prev.filter((item: ITabs) => item.id !== idDel))
   }
   // cancel deleting tabs
   const cancelEditHandler = () => {
@@ -124,7 +120,7 @@ const Services = () => {
 
   const handlActiveTabClick = (tab: number) => {
     setActiveTab(tab);
-    setFilteredEvents(data?.serviceRes.data.data.filter((servData: INewsApi) => servData.service_category_id === tab));
+    setFilteredEvents(data?.serviceRes.data.data.filter((servData: IServices) => servData.service_category_id === `${tab}`));
   };
 
 
@@ -199,14 +195,14 @@ const Services = () => {
           >
             <h2 className="font-semibold text-xl mb-5 text-primary text-center">اضافة فئة خدمة جديدة</h2>
             <div className='flex flex-col gap-2'>
-              {addArr.map((item: IEventTabs) => {
+              {addArr.map((item: ITabs) => {
 
                 return <div key={item.id} className="flex items-center shadow-md p-4 rounded-lg justify-between gap-7">
                   <div className=" font-medium text-lg leading-6 text-gray-700">
                     {item.name}
                   </div>
                   <div
-                    onClick={() => addToDelArr(item.id)}
+                    onClick={() => addToDelArr(item.id!)}
                     className="flex rounded-md text-sm text-red-800 justify-end flex-1">
                     حذف
                   </div>
@@ -253,16 +249,16 @@ const Services = () => {
       </div>
       <div className="font-header font-bold text-center md:text-3xl text-primary">الخدمات</div>
       <div className='flex lg:justify-center items-center gap-3 overflow-x-scroll py-2' style={{ scrollbarWidth: "thin", scrollbarColor: "#cfcfcfb8 transparent" }}>
-        {tabs.map((tab: IEventTabs) => (
+        {tabs.map((tab: ITabs) => (
           <Button key={tab.id}
-            onClick={() => handlActiveTabClick(tab.id)}
+            onClick={() => handlActiveTabClick(tab.id!)}
             className={(activeTab === tab.id
               ? "bg-primary text-white border-primary"
               : "border-gray-200 bg-white text-gray-800") + ' w-28 md:w-36 border-1 border focus-visible:ring-0 py-1 hover:text-white hover:bg-primary md:text-lg'}>{txtSlicer(tab.name, 12)}</Button>
         ))}
       </div>
       <div className='flex gap-3 flex-col md:flex-row md:flex-wrap md:justify-between'>
-        {filteredEvents.map((item: INewsApi) => <CardNews tabs={tabs} noPic={false} key={item.id} order={2} news={item} url='/services' />)}
+        {filteredEvents.map((item: IServices) => <CardNews tabs={tabs} noPic={false} key={item.id} order={2} news={item as INewsApi} url='/services' />)}
       </div>
     </div>
   )

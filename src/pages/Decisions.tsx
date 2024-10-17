@@ -1,6 +1,5 @@
 import CardNews from "../components/Card";
 import { useState, ChangeEvent } from "react";
-import { INewsApi } from "@/interfaces";
 import instance from '../api/instance'
 import Alerting from '../components/Complaint/Alert';
 import Pagination from "@mui/material/Pagination";
@@ -12,6 +11,7 @@ import { useQuery } from '@tanstack/react-query'
 import CardSkeleton from "../components/Skeleton/CardSkeleton";
 import FormAddDecision from "../components/Form/FormsAdd/FormAddDecision";
 import FormAddSkeleton from "../components/Skeleton/FormAddSkeleton";
+import { IDecisions, INewsApi } from "../interfaces";
 
 const pagesize = 2;
 
@@ -54,8 +54,8 @@ const Decisions = () => {
       <div className="container">
         <FormAddDecision  />
       </div>
-      {data.slice(Pag.from, Pag.to).map((news: INewsApi) => (
-        <CardNews news={news} key={news.id} url={"/decision"} />
+      {data.slice(Pag.from, Pag.to).map((news: IDecisions) => (
+        <CardNews news={news as INewsApi} key={news.id} url={"/decision"} />
       ))}
       <div className="flex justify-items-center justify-center	">
         <Stack spacing={2}>

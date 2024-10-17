@@ -1,17 +1,19 @@
 import { useState } from "react";
-import { IMember } from "../../interfaces";
+import { IMembers } from "../../interfaces";
 import {
   Card,
   CardHeader,
   CardBody,
   Typography,
+  CardFooter,
 } from "@material-tailwind/react";
 import instance from "../../api/instance";
 import toast from "react-hot-toast";
 import { Dialog } from '@headlessui/react'
 import FormEditMember from "../Form/FormEdit/FormEditMember";
+import { txtSlicer } from "../../utils/functions";
 
-function Member({ member }: { member: IMember }) {
+function Member({ setRefresh, member }: {setRefresh:(val:string)=>void, member: IMembers }) {
   const [openDel, setOpenDel] = useState(false)
   const [openEdit, setOpenEdit] = useState(false)
 
@@ -43,6 +45,8 @@ function Member({ member }: { member: IMember }) {
         className: 'bg-blue-100',
         icon: '👏',
       }) : null;
+      setRefresh("true")
+
     } catch (error) {
       console.error('Error fetching news:', error);
       toast.error('حدث خطأ أثناء ارسال الطلب', {
@@ -56,7 +60,7 @@ function Member({ member }: { member: IMember }) {
     }, 1000);
   }
   return (
-    <Card className="h-full">
+    <Card className="h-full max-h-[450px]">
       {/* Modal Delete Item */}
       <Dialog open={openDel} onClose={setOpenDel} className="relative z-10">
         <Dialog.Backdrop
@@ -93,12 +97,12 @@ function Member({ member }: { member: IMember }) {
           <Dialog.Panel
             className="relative transform overflow-hidden rounded-lg bg-white shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
           >
-            <FormEditMember item={member} setOpenEdit={setOpenEdit} />
+            <FormEditMember  setRefresh={setRefresh} member={member} setOpenEdit={setOpenEdit} />
           </Dialog.Panel>
         </div>
       </Dialog>
       <CardHeader shadow={false} floated={false} >
-        {member.photo ? <img src={member.photo}
+        {member.photo ? <img src={typeof(member.photo) == "string" ? member.photo :""}
           alt="card-image"
           className="lg:h-[224px] w-full object-cover" /> : <img
           src={`/images/empty.jpg`}
@@ -106,25 +110,33 @@ function Member({ member }: { member: IMember }) {
           className="lg:h-[224px] w-full object-cover"
         />}
       </CardHeader>
-      <CardBody className="flex flex-col items-center justify-center ">
+      <CardBody className="p-5 flex flex-col items-center justify-center h-full">
         <Typography variant="h4" className="mb-2 text-primary uppercase text-sm">
           {member.name}
         </Typography>
-        <div className='flex justify-center gap-2 items-center'>
+        <Typography variant="small" color="blue-gray" className="mb-2 text-sm text-gray-600">
+          {member.job_title}
+        </Typography>
+        <Typography variant="paragraph" color="blue-gray" className="text-gray-600">
+          {txtSlicer(member.description, 150)}
+        </Typography>
+      </CardBody>
+      <CardFooter className="px-5 pb-5 pt-0">
+        <div className='flex justify-center gap-2 items-end h-auto'>
           <button
             onClick={handleEdite}
-            className="px-4 my-3 border-2 border-primary rounded-lg bg-primary py-2 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            className="px-3 border-2 border-primary rounded-lg bg-primary py-1 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
             تعديل
           </button>
           <button
-            onClick={() => handleDelete(member.id)}
-            className="px-4 my-3 rounded-lg border-2 border-red-800 py-2 font-semibold text-red-800 shadow-sm hover:bg-red-500 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            onClick={() => handleDelete(member.id!)}
+            className="px-3 rounded-lg border-2 border-red-800 py-1 font-semibold text-red-800 shadow-sm hover:bg-red-500 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
             حذف
           </button>
         </div>
-      </CardBody>
+      </CardFooter>
     </Card >
   );
 }
