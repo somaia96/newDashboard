@@ -1,8 +1,8 @@
 import { FormEvent, ChangeEvent, useState } from 'react';
 import instance from '../../../api/instance'
-import toast from 'react-hot-toast';
 import { PhotoIcon } from '@heroicons/react/24/solid'
 import { IMembers } from '@/interfaces';
+import toasty from '../../../utils/toast';
 
 
 export default function FormEditMember({setRefresh, member, setOpenEdit }: {setRefresh:(val:string)=>void, member: IMembers, setOpenEdit: (val: boolean) => void }) {
@@ -44,20 +44,10 @@ export default function FormEditMember({setRefresh, member, setOpenEdit }: {setR
                     Authorization: `Bearer ${getToken()}`,
                 }
             });
-            (res.status === 200 || res.status === 201) ? toast.success('تم تعديل المعلومات ', {
-                duration: 2000,
-                position: 'top-center',
-                className: 'bg-blue-100',
-                icon: '👏',
-            }) : null;
+            (res.status === 200 || res.status === 201) ? toasty("success","تم تعديل معلومات العضو") : null;
             setRefresh("true")
         } catch (error) {
-            console.error('Error fetching news:', error);
-            toast.error('حدث خطأ أثناء ارسال الطلب', {
-                duration: 2000,
-                position: 'top-center',
-                className: 'bg-red-100',
-            });
+            toasty("error","حدث خطأ أثناء تعديل المعلومات")
         }
     };
 

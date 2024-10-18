@@ -1,5 +1,5 @@
 
-import Alerting from "../components/Complaint/Alert";
+import Alerting from "../components/Alert";
 import instance from "../api/instance";
 import { Card, Typography } from "@material-tailwind/react";
 import { useQuery } from "@tanstack/react-query";
@@ -12,7 +12,6 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ComplaintSkeleton from "../components/Skeleton/ComplaintSkeleton";
 import Details from "../components/Complaint/Details";
 import { Dialog } from '@headlessui/react'
-import { Toaster } from "react-hot-toast";
 import { Button } from "../components/ui/button";
 import { IComplaints, Status } from "../interfaces";
 
@@ -74,7 +73,32 @@ export default function Complaints() {
         }
         setFilteredComp(data?.comp.data.data.filter((compData: IComplaints) => compData.status === tab));
     };
+    const forceDeleteHandler = (id:number) => {
+       try {
+        instance.delete(`/complaints/${id}/force`,{
+            headers: {
+                Authorization: `Bearer ${getToken()}`
+            }
+        })
 
+       } catch (error) {
+        console.log(error);
+        
+       }
+    };
+    const restoreHandler = (id:number) => {
+        try {
+         instance.delete(`/complaints/${id}/restore`,{
+             headers: {
+                 Authorization: `Bearer ${getToken()}`
+             }
+         })
+ 
+        } catch (error) {
+         console.log(error);
+         
+        }
+     };
     const [Pag, setPag] = useState({
         from: 0,
         to: pagesize,
@@ -108,7 +132,6 @@ export default function Complaints() {
             ))}
         </div>
         <Card className="h-full w-full mt-4">
-            <Toaster />
             {/* Modal Edit Item */}
             <Dialog open={openDetail} onClose={setOpenDetail} className="relative z-10 w-full">
                 <Dialog.Backdrop
@@ -184,7 +207,7 @@ export default function Complaints() {
                                     >
                                         {photos.length > 0 ? "شكوى + صورة" : "شكوى"}
                                     </Typography>
-                                    <Typography
+                                    {!Status.Trash ? <Typography
                                         as="a"
                                         href="#"
                                         variant="small"
@@ -193,7 +216,15 @@ export default function Complaints() {
                                         className="font-medium"
                                     >
                                         عرض المزيد
-                                    </Typography>
+                                    </Typography> : <div className="flex gap-2 items-center">
+                                        <span 
+                                        onClick={()=>restoreHandler(id!)}
+
+                                        className="cursor-pointer hover:border-b-2 leading-4 border-gray-600 font-semibold text-xs">استعادة</span>
+                                        <span 
+                                        onClick={()=>forceDeleteHandler(id!)}
+                                        className="cursor-pointer hover:border-b-2 leading-4 border-red-500 font-semibold text-red-500 text-xs">حذف نهائي</span>
+                                        </div>}
                                 </td>
                             </tr>
                         );

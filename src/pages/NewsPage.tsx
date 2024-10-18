@@ -2,7 +2,7 @@ import CardNews from "../components/Card";
 import { useState, ChangeEvent } from "react";
 import { INews, INewsApi } from "@/interfaces";
 import instance from '../api/instance'
-import Alerting from '../components/Complaint/Alert';
+import Alerting from '../components/Alert';
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
 import PaginationItem from "@mui/material/PaginationItem";

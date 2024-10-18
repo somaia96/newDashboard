@@ -2,7 +2,7 @@ import CardNews from "../components/Card";
 import { useState, ChangeEvent } from "react";
 import instance from '../api/instance'
 import { Button } from '../components/ui/button';
-import Alerting from '../components/Complaint/Alert';
+import Alerting from '../components/Alert';
 import Stack from "@mui/material/Stack";
 import Pagination from "@mui/material/Pagination";
 import PaginationItem from "@mui/material/PaginationItem";

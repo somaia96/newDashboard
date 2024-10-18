@@ -1,9 +1,9 @@
 import { FormEvent, ChangeEvent, useState } from 'react';
 import instance from '../../../api/instance'
-import toast, { Toaster } from 'react-hot-toast';
 import { txtSlicer } from '../../../utils/functions';
 import { Button } from '../../ui/button';
 import { IServices, ITabs } from '@/interfaces';
+import toasty from '../../../utils/toast';
 
 
 export default function FormEditServ({item,setOpenEdit,tabs}:{item:IServices,setOpenEdit:(val:boolean)=>void,tabs?: ITabs[]}) {
@@ -43,28 +43,17 @@ export default function FormEditServ({item,setOpenEdit,tabs}:{item:IServices,set
                 }
             });
 
-            (res.status === 200 || res.status === 201) ? toast.success('تم تعديل الخدمة ', {
-                duration: 2000,
-                position: 'top-center',
-                className: 'bg-blue-100',
-                icon: '👏',
-            }) : null;
+            (res.status === 200 || res.status === 201) ? toasty("success","تم تعديل الخدمة بنجاح") : null;
             setOpenEdit(false)
 
         } catch (error) {
-            console.error('Error fetching news:', error);
-            toast.error('حدث خطأ أثناء ارسال الطلب', {
-                duration: 2000,
-                position: 'top-center',
-                className: 'bg-red-100',
-            });
+            toasty("error","حدث خطأ أثناء تعديل الخدمة")
         }
     };
 
     return (
         <div className='flex gap-3 p-5 my-10 rounded-3xl bg-white'>
             <form className='w-full rounded-xl' onSubmit={(e) => submitEditHandler(e)}>
-                <Toaster position="top-center" reverseOrder={false} />
                 <div className="space-y-2">
                     <h2 className='font-bold text-xl text-center text-primary mb-5'>تعديل الخدمة</h2>
 

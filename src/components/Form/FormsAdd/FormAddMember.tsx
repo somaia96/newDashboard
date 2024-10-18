@@ -1,8 +1,8 @@
 import { FormEvent, ChangeEvent, useState } from 'react';
 import instance from '../../../api/instance'
-import toast, { Toaster } from 'react-hot-toast';
 import { PhotoIcon } from '@heroicons/react/24/solid'
 import { IMembers } from '../../../interfaces';
+import toasty from '../../../utils/toast';
 
 export default function FormAddMember({ setRefresh}:{setRefresh:(val:string)=>void}) {
     const [memberAddData, setMemberAddData] = useState<IMembers>({
@@ -44,28 +44,17 @@ export default function FormAddMember({ setRefresh}:{setRefresh:(val:string)=>vo
                 }
             });
 
-            (res.status === 200 || res.status === 201) ? toast.success('تم ارسال الطلب ', {
-                duration: 2000,
-                position: 'top-center',
-                className: 'bg-blue-100',
-                icon: '👏',
-            }) : null;
+            (res.status === 200 || res.status === 201) ? toasty("success","تم اضافة العضو بنجاح") : null;
             setRefresh("true")
 
         } catch (error) {
-            console.error('Error fetching news:', error);
-            toast.error('حدث خطأ أثناء ارسال الطلب', {
-                duration: 2000,
-                position: 'top-center',
-                className: 'bg-red-100',
-            });
+            toasty("error","حدث خطأ أثناء اضافة العضو")
         }
     };
 
     return (
         <div className='flex gap-3 p-5 my-10 rounded-3xl bg-white'>
             <form className='w-full rounded-xl' onSubmit={(e) => submitHandler(e)}>
-                <Toaster position="top-center" reverseOrder={false} />
                 <div className="space-y-2">
                     <h2 className='font-bold text-xl text-center text-primary mb-5'>اضافة عضو جديد</h2>
                     <div className="flex items-center justify-between">

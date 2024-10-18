@@ -8,10 +8,10 @@ import {
   CardFooter,
 } from "@material-tailwind/react";
 import instance from "../../api/instance";
-import toast from "react-hot-toast";
 import { Dialog } from '@headlessui/react'
 import FormEditMember from "../Form/FormEdit/FormEditMember";
 import { txtSlicer } from "../../utils/functions";
+import toasty from "../../utils/toast";
 
 function Member({ setRefresh, member }: {setRefresh:(val:string)=>void, member: IMembers }) {
   const [openDel, setOpenDel] = useState(false)
@@ -39,21 +39,12 @@ function Member({ setRefresh, member }: {setRefresh:(val:string)=>void, member: 
           Authorization: `Bearer ${getToken()}`,
         }
       });
-      (res.status === 200 || res.status === 201) ? toast.success('تم الحذف بنجاح  ', {
-        duration: 2000,
-        position: 'top-center',
-        className: 'bg-blue-100',
-        icon: '👏',
-      }) : null;
+      (res.status === 200 || res.status === 201) ? toasty("success","تم الحذف بنجاح") : null;
       setRefresh("true")
 
     } catch (error) {
       console.error('Error fetching news:', error);
-      toast.error('حدث خطأ أثناء ارسال الطلب', {
-        duration: 2000,
-        position: 'top-center',
-        className: 'bg-red-100',
-      });
+      toasty("error","حدث خطأ أثناء الحذف")
     }
     setTimeout(() => {
       window.location.reload();

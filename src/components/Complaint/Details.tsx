@@ -1,8 +1,8 @@
 import { useState } from "react"
 import { Button } from "../ui/button"
 import instance from "../../api/instance"
-import toast from "react-hot-toast"
 import { IComplaints, Status } from "../../interfaces"
+import toasty from "../../utils/toast"
 interface IPutComp{
     status:Status,
     _method:string,
@@ -48,21 +48,11 @@ const Details = ({setRefresh,tabs, setOpenDetail, data }: {setRefresh:(val:strin
                     Authorization: `Bearer ${getToken()}`,
                 }
             });
-            (res.status === 200 || res.status === 201) ? toast.success('تم ارسال الطلب ', {
-                duration: 2000,
-                position: 'top-center',
-                className: 'bg-blue-100',
-                icon: '👏',
-            }) : null;
+            (res.status === 200 || res.status === 201) ? toasty("success","تم الارسال لسلة المهملات") : null;
             setOpenDetail(false)
             setRefresh("true")
         } catch (error) {
-            console.error('Error fetching news:', error);
-            toast.error('حدث خطأ أثناء ارسال الطلب', {
-                duration: 2000,
-                position: 'top-center',
-                className: 'bg-red-100',
-            });
+            toasty("error","حدث خطأ أثناء الحذف")
         }
 
         return;
@@ -75,21 +65,11 @@ const Details = ({setRefresh,tabs, setOpenDetail, data }: {setRefresh:(val:strin
                     Authorization: `Bearer ${getToken()}`,
                 }
             });
-            (res.status === 200 || res.status === 201) ? toast.success('تم ارسال الطلب ', {
-                duration: 2000,
-                position: 'top-center',
-                className: 'bg-blue-100',
-                icon: '👏',
-            }) : null;
+            (res.status === 200 || res.status === 201) ? toasty("success","تم ارسال الشكوى بنجاح") : null;
             setOpenDetail(false)
             setRefresh("true")
         } catch (error) {
-            console.error('Error fetching news:', error);
-            toast.error('حدث خطأ أثناء ارسال الطلب', {
-                duration: 2000,
-                position: 'top-center',
-                className: 'bg-red-100',
-            });
+            toasty("error","حدث خطأ أثناء ارسال الشكوى")
         }
     };
 

@@ -5,7 +5,7 @@
       month: 'كانون2',
     },
     {
-        decision: 52,
+        decision: 17,
       month: 'شباط',
     },
     {
@@ -13,23 +13,23 @@
       month: 'اذار',
     },
     {
-        decision: 56,
+        decision: 46,
       month: 'نيسان',
     },
     {
-        decision: 69,
+        decision: 64,
       month: 'ايار',
     },
     {
-        decision: 63,
+        decision: 23,
       month: 'حزيران',
     },
     {
-        decision: 80,
+        decision: 70,
       month: 'تموز',
     },
     {
-        decision: 60,
+        decision: 20,
       month: 'اب',
     },
   ];
@@ -39,7 +39,7 @@
       month: 'كانون2',
     },
     {
-        news: 52,
+        news: 92,
       month: 'شباط',
     },
     {
@@ -51,15 +51,15 @@
       month: 'نيسان',
     },
     {
-        news: 69,
+        news: 89,
       month: 'ايار',
     },
     {
-        news: 63,
+        news: 23,
       month: 'حزيران',
     },
     {
-        news: 80,
+        news: 40,
       month: 'تموز',
     },
     {
@@ -73,7 +73,7 @@
       month: 'كانون2',
     },
     {
-        event: 52,
+        event: 72,
       month: 'شباط',
     },
     {
@@ -81,7 +81,7 @@
       month: 'اذار',
     },
     {
-        event: 56,
+        event: 16,
       month: 'نيسان',
     },
     {
@@ -89,15 +89,15 @@
       month: 'ايار',
     },
     {
-        event: 63,
+        event: 93,
       month: 'حزيران',
     },
     {
-        event: 80,
+        event: 85,
       month: 'تموز',
     },
     {
-        event: 60,
+        event: 20,
       month: 'اب',
     },
   ];
@@ -107,7 +107,7 @@
       month: 'كانون2',
     },
     {
-        services: 52,
+        services: 72,
       month: 'شباط',
     },
     {
@@ -115,11 +115,11 @@
       month: 'اذار',
     },
     {
-        services: 56,
+        services: 16,
       month: 'نيسان',
     },
     {
-        services: 69,
+        services: 49,
       month: 'ايار',
     },
     {
@@ -127,7 +127,7 @@
       month: 'حزيران',
     },
     {
-        services: 80,
+        services: 90,
       month: 'تموز',
     },
     {

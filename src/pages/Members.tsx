@@ -7,7 +7,7 @@ import {
 } from "../components/ui/carousel"
 import { useQuery } from "@tanstack/react-query";
 import instance from "../api/instance";
-import Alerting from "../components/Complaint/Alert";
+import Alerting from "../components/Alert";
 import { IMembers } from "../interfaces";
 import Member from "../components/AboutUs/Member";
 import MemberSkeleton from "../components/Skeleton/MemberSkeleton";

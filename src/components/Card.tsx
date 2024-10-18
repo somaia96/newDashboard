@@ -8,12 +8,12 @@ import { IDecisions, IEvents, INews, INewsApi, IServices, ITabs } from "../inter
 import { txtSlicer } from "../utils/functions";
 import { useState } from "react";
 import { Dialog } from '@headlessui/react'
-import toast from "react-hot-toast";
 import instance from "../api/instance";
 import FormEditNews from "./Form/FormEdit/FormEditNews";
 import FormEditServ from "./Form/FormEdit/FormEditServ";
 import FormEditEvents from "./Form/FormEdit/FormEditEvent";
 import FormEditDecision from "./Form/FormEdit/FormEditDecision";
+import toasty from "../utils/toast";
 
 interface IProps {
   news: INewsApi,
@@ -49,19 +49,10 @@ export default function CardNews({ noPic = true, order = 0, news,url,tabs }: IPr
               Authorization: `Bearer ${getToken()}`,
           }
       });
-      (res.status === 200 || res.status === 201) ? toast.success('تم الحذف بنجاح  ', {
-          duration: 2000,
-          position: 'top-center',
-          className: 'bg-blue-100',
-          icon: '👏',
-      }) : null;
+      (res.status === 200 || res.status === 201) ? toasty("success","تم الحذف بنجاح") : null;
   } catch (error) {
       console.error('Error fetching news:', error);
-      toast.error('حدث خطأ أثناء ارسال الطلب', {
-          duration: 2000,
-          position: 'top-center',
-          className: 'bg-red-100',
-      });
+      toasty("error","حدث خطأ أثناء الحذف")
   }
   setTimeout(() => {
     window.location.reload();

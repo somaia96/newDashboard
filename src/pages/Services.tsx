@@ -2,7 +2,7 @@ import CardNews from '../components/Card';
 import { ChangeEvent, useState } from "react";
 import { INewsApi, IServices ,ITabs } from "@/interfaces";
 import { Button } from '../components/ui/button';
-import Alerting from '../components/Complaint/Alert';
+import Alerting from '../components/Alert';
 import instance from '../api/instance'
 import { useQuery } from '@tanstack/react-query'
 import { txtSlicer } from '../utils/functions';
@@ -10,8 +10,8 @@ import CardSkeleton from '../components/Skeleton/CardSkeleton';
 import TabSkeleton from '../components/Skeleton/TabSkeleton';
 import FormAddServ from '../components/Form/FormsAdd/FormAddServ';
 import { Dialog } from '@headlessui/react'
-import toast from 'react-hot-toast';
 import FormAddSkeleton from '../components/Skeleton/FormAddSkeleton';
+import toasty from '../utils/toast';
 
 
 const Services = () => {
@@ -60,22 +60,12 @@ const Services = () => {
         }
       });
 
-      (res.status === 200 || res.status === 201) ? toast.success('تم ارسال الطلب ', {
-        duration: 2000,
-        position: 'top-center',
-        className: 'bg-blue-100',
-        icon: '👏',
-      }) : null;
+      (res.status === 200 || res.status === 201) ? toasty("success","تم اضافة فئة جديدة بنجاح") : null;
       setOpenAdd(false)
       setNameTab("")
 
     } catch (error) {
-      console.error('Error fetching news:', error);
-      toast.error('حدث خطأ أثناء ارسال الطلب', {
-        duration: 2000,
-        position: 'top-center',
-        className: 'bg-red-100',
-      });
+      toasty("error","حدث خطأ أثناء اضافة فئة")
     }
 
   }
@@ -107,12 +97,7 @@ const Services = () => {
       setAddArr(data?.tabRes.data.data)
 
     } catch (error) {
-      console.error('Error fetching news:', error);
-      toast.error('حدث خطأ أثناء ارسال الطلب', {
-        duration: 2000,
-        position: 'top-center',
-        className: 'bg-red-100',
-      });
+      toasty("error","حدث خطأ أثناء حذف الفئة")
     }
   }
 

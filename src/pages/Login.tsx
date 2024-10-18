@@ -1,6 +1,6 @@
+import toasty from "../utils/toast";
 import instance from "../api/instance";
 import { ChangeEvent, FormEvent, useState } from "react";
-import toast, { Toaster } from "react-hot-toast"
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
@@ -26,34 +26,22 @@ const Login = () => {
             });
             storeToken(res.data.token);
             if(res.status === 200 || res.status === 201) {
-                toast.success('تم تسجيل الدخول بنجاح', {
-                duration: 2000,
-                position: 'top-center',
-                className: 'bg-blue-100',
-                icon: '👏',
-            }) ;
-        setTimeout(()=>{
-            navigate("/")
-        } ,2000);
+                toasty("success",'تم تسجيل الدخول بنجاح') ;
+                setTimeout(()=>{
+                    navigate("/")
+                } ,2000);
         }
         } catch (error) {
-            console.error('Error fetching news:', error);
-            toast.error('تأكد من صحة المعلومات', {
-                duration: 2000,
-                position: 'top-center',
-                className: 'bg-red-100',
-            });
-        }
+            toasty("error",'تأكد من صحة المعلومات')
     };
-
+    }
     return (
         <div className="h-screen flex container items-center justify-center">
           <div className="flex rounded-lg overflow-hidden w-3/4">
             
           <div className="w-2/5 bg-white p-10">
                 <form className='w-full rounded-xl' onSubmit={(e) => submitHandler(e)}>
-                    <Toaster position="top-center" reverseOrder={false} />
-                    <div className="space-y-3">
+                   <div className="space-y-3">
                         <h2 className='font-bold text-xl text-center text-primary mb-5'>مرحبا بكم في لوحة تحكم بلدية ضاحية الأسد</h2>
 
                         <div className="space-y-2">
