@@ -206,7 +206,7 @@ export default function Complaints() {
                                     >
                                         {photos.length > 0 ? "شكوى + صورة" : "شكوى"}
                                     </Typography>
-                                    {!Status.Trash ? <Typography
+                                    {activeTab !== Status.Trash ? <Typography
                                         as="a"
                                         href="#"
                                         variant="small"

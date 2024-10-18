@@ -20,8 +20,8 @@ export default function FormEditNews({setRefresh,item,setOpenEdit}:{setRefresh:(
             const files: FileList | null = (e.target as HTMLInputElement).files;
             const filesArray = files ?? [];
             if (filesArray?.length > 0) {
-                const newPhotos = Array.from(filesArray) as File[];
-                setNewsData((prev) => ({ ...prev, photos: newPhotos }));
+                const newEditPhotos = Array.from(filesArray) as File[];
+                setNewsData((prev) => ({ ...prev, photos: newEditPhotos }));
             }
 
         } else {
