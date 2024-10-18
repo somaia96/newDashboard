@@ -5,9 +5,10 @@ import { Button } from '../../ui/button';
 import { txtSlicer } from '../../../utils/functions';
 import { IEvents, ITabs } from '../../../interfaces';
 import toasty from '../../../utils/toast';
+import getToken from "../../../utils/gitToken";
 
 
-export default function FormEditEvents({item,setOpenEdit,tabs}:{item:IEvents,setOpenEdit:(val:boolean)=>void,tabs?: ITabs[]}) {
+export default function FormEditEvents({setRefresh,item,setOpenEdit,tabs}:{setRefresh:(val:string)=>void,item:IEvents,setOpenEdit:(val:boolean)=>void,tabs?: ITabs[]}) {
 
     const [activeTab, setActiveTab] = useState(item.activity_type_id)
     const [eventData, setEventData] = useState<IEvents>({
@@ -22,10 +23,6 @@ export default function FormEditEvents({item,setOpenEdit,tabs}:{item:IEvents,set
         setActiveTab(tab);
         setEventData((prev) => ({ ...prev, activity_type_id: tab }));
     }
-
-    const getToken = () => {
-        return localStorage.getItem('tokenMunicipality');
-    };
 
     const changeEditHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -54,6 +51,8 @@ export default function FormEditEvents({item,setOpenEdit,tabs}:{item:IEvents,set
             });
             (res.status === 200 || res.status === 201) ? toasty("success","تم تعديل الفعالية") : null;
             setOpenEdit(false)
+            setRefresh("edit")
+
         } catch (error) {
             toasty("error","حدث خطأ أثناء تعديل الفعالية")
         }

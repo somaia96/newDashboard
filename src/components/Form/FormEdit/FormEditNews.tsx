@@ -3,18 +3,15 @@ import instance from '../../../api/instance'
 import { PhotoIcon } from '@heroicons/react/24/solid'
 import { INews } from '../../../interfaces';
 import toasty from '../../../utils/toast';
+import getToken from "../../../utils/gitToken";
 
-export default function FormEditNews({item,setOpenEdit}:{item:INews,setOpenEdit:(val:boolean)=>void}) {
+export default function FormEditNews({setRefresh,item,setOpenEdit}:{setRefresh:(val:string)=>void,item:INews,setOpenEdit:(val:boolean)=>void}) {
     const [newsData, setNewsData] = useState<INews>({
         title: item.title,
         description: item.description,
         photos: [],
         _method:"PUT",
     })
-
-    const getToken = () => {
-        return localStorage.getItem('tokenMunicipality');
-    };
 
     const changeEditHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -42,9 +39,10 @@ export default function FormEditNews({item,setOpenEdit}:{item:INews,setOpenEdit:
                     Authorization: `Bearer ${getToken()}`,
                 }
             });
-            console.log(res);
             
             (res.status === 200 || res.status === 201) ? toasty("success","تم تعديل الخبر بنجاح") : null;
+            setRefresh("edit")
+
         } catch (error) {
             toasty("error","حدث خطأ أثناء تعديل الخبر")
         }

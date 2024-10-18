@@ -19,18 +19,21 @@ import { IEvents, INewsApi, ITabs } from "../interfaces";
 const pagesize = 2;
 
 const Events = () => {
+  const [refresh, setRefresh] = useState("false")
 
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [activeTab, setActiveTab] = useState<number>(0);
   const { isLoading, error, data } = useQuery({
-    queryKey: ['activityData'],
-    queryFn: async () => {
+    queryKey: ['activityData', refresh],
+    queryFn: async ({ queryKey }) => {
+      const currentStatus = queryKey[1]; // Access tabId from queryKey
+      if (!currentStatus) return; // Avoid unnecessary initial request
       const eventRes = await instance.get('/activity')
       const tabRes = await instance.get('/activity-type');
       setFilteredEvents(eventRes.data.data)
-
       return { eventRes, tabRes }
-    }
+    },
+    enabled: !!refresh,
   })
 
   const tabs = data?.tabRes.data.data;
@@ -68,7 +71,7 @@ const Events = () => {
   return (
     <div className="my-10">
       <div className="container">
-        <FormAddEvents tabs={tabs} />
+        <FormAddEvents  setRefresh={setRefresh} tabs={tabs} />
       </div>
       <div className="font-header md:text-3xl font-bold text-center text-primary">الفعاليات</div>
       <div className='flex lg:justify-center items-center gap-3 py-2'>
@@ -81,7 +84,7 @@ const Events = () => {
         ))}
       </div>
       {filteredEvents.slice(Pag.from, Pag.to).map((news: IEvents) => (
-        <CardNews news={news as INewsApi} key={news.id} url="/activity" tabs={tabs} />
+        <CardNews setRefresh={setRefresh} news={news as INewsApi} key={news.id} url="/activity" tabs={tabs} />
       ))}
       <div className="flex justify-items-center justify-center	">
         <Stack spacing={2}>

@@ -3,9 +3,10 @@ import instance from '../../../api/instance'
 import { PhotoIcon } from '@heroicons/react/24/solid'
 import { IDecisions } from '../../../interfaces';
 import toasty from '../../../utils/toast';
+import getToken from "../../../utils/gitToken";
 
 
-export default function FormEditDecision({item,setOpenEdit}:{item:IDecisions,setOpenEdit:(val:boolean)=>void}) {
+export default function FormEditDecision({setRefresh,item,setOpenEdit}:{setRefresh:(val:string)=>void,item:IDecisions,setOpenEdit:(val:boolean)=>void}) {
 
     const [descData, setDescData] = useState<IDecisions>({
         title: item.title,
@@ -16,10 +17,6 @@ export default function FormEditDecision({item,setOpenEdit}:{item:IDecisions,set
         _method:"PUT",
     })
     
-    const getToken = () => {
-        return localStorage.getItem('tokenMunicipality');
-    };
-
     const changeEditHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
         const { name, value } = e.target;
 
@@ -46,6 +43,7 @@ export default function FormEditDecision({item,setOpenEdit}:{item:IDecisions,set
             });
             (res.status === 200 || res.status === 201) ? toasty("success","تم تعديل القرار") : null;
             setOpenEdit(false)
+            setRefresh("edit")
         } catch (error) {
             toasty("error","حدث خطأ أثناء تعديل القرار")
         }

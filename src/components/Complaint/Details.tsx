@@ -3,10 +3,13 @@ import { Button } from "../ui/button"
 import instance from "../../api/instance"
 import { IComplaints, Status } from "../../interfaces"
 import toasty from "../../utils/toast"
+import getToken from "../../utils/gitToken";
+
 interface IPutComp{
     status:Status,
     _method:string,
 }
+
 const Details = ({setRefresh,tabs, setOpenDetail, data }: {setRefresh:(val:string)=>void,tabs:{ name: string; value: Status; }[], setOpenDetail: (val: boolean) => void, data: IComplaints }) => {
     const [compData, setCompData] = useState<IPutComp>({
         status: data.status,
@@ -35,13 +38,10 @@ const Details = ({setRefresh,tabs, setOpenDetail, data }: {setRefresh:(val:strin
         })
         setOpenDetail(false)
     };
-    const getToken = () => {
-        return localStorage.getItem('tokenMunicipality');
-    };
 
     const handleSave = async (tab:string, id: number) => {
         
-        if(tab === "trash"){         
+        if(tab === Status.Trash){         
         try {
             let res = await instance.delete(`/complaint/${id}`, {
                 headers: {
@@ -50,7 +50,7 @@ const Details = ({setRefresh,tabs, setOpenDetail, data }: {setRefresh:(val:strin
             });
             (res.status === 200 || res.status === 201) ? toasty("success","تم الارسال لسلة المهملات") : null;
             setOpenDetail(false)
-            setRefresh("true")
+            setRefresh("delete")
         } catch (error) {
             toasty("error","حدث خطأ أثناء الحذف")
         }
@@ -67,7 +67,7 @@ const Details = ({setRefresh,tabs, setOpenDetail, data }: {setRefresh:(val:strin
             });
             (res.status === 200 || res.status === 201) ? toasty("success","تم ارسال الشكوى بنجاح") : null;
             setOpenDetail(false)
-            setRefresh("true")
+            setRefresh("edit")
         } catch (error) {
             toasty("error","حدث خطأ أثناء ارسال الشكوى")
         }

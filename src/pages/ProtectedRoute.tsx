@@ -1,9 +1,7 @@
+import getToken from "../utils/gitToken";
 import { ReactNode, useState } from "react";
 import { Navigate } from "react-router-dom";
 
-const getToken = () => {
-    return localStorage.getItem('tokenMunicipality');
-};
 
 interface IProps {
     children:ReactNode,

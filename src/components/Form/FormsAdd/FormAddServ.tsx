@@ -4,8 +4,9 @@ import { txtSlicer } from '../../../utils/functions';
 import { Button } from '../../ui/button';
 import { IServices, ITabs } from '../../../interfaces';
 import toasty from '../../../utils/toast';
+import getToken from "../../../utils/gitToken";
 
-export default function FormAddServ({ tabs }: { tabs: ITabs[] }) {
+export default function FormAddServ({setRefresh, tabs }: { setRefresh:(val:string)=>void,tabs: ITabs[] }) {
     const [activeTab, setActiveTab] = useState(1)
     const [servData, setServData] = useState<IServices>({
         title: "",
@@ -16,9 +17,6 @@ export default function FormAddServ({ tabs }: { tabs: ITabs[] }) {
         setActiveTab(tabNum);
         setServData((prev) => ({ ...prev, service_category_id: `${tabNum}` }));
     }
-    const getToken = () => {
-        return localStorage.getItem('tokenMunicipality');
-    };
 
     const changeAddHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -40,8 +38,9 @@ export default function FormAddServ({ tabs }: { tabs: ITabs[] }) {
                     Authorization: `Bearer ${getToken()}`,
                 }
             });
-
             (res.status === 200 || res.status === 201) ? toasty("success","تم اضافة الخدمة بنجاح") : null;
+            setRefresh("add")
+
         } catch (error) {
             toasty("error","حدث خطأ أثناء اضافة الخدمة")
         }

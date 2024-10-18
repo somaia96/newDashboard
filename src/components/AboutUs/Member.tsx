@@ -12,6 +12,7 @@ import { Dialog } from '@headlessui/react'
 import FormEditMember from "../Form/FormEdit/FormEditMember";
 import { txtSlicer } from "../../utils/functions";
 import toasty from "../../utils/toast";
+import getToken from "../../utils/gitToken";
 
 function Member({ setRefresh, member }: {setRefresh:(val:string)=>void, member: IMembers }) {
   const [openDel, setOpenDel] = useState(false)
@@ -19,10 +20,6 @@ function Member({ setRefresh, member }: {setRefresh:(val:string)=>void, member: 
 
   const [itemID, setItemID] = useState<number>(0)
 
-
-  const getToken = () => {
-    return localStorage.getItem('tokenMunicipality');
-  };
   const handleEdite = () => {
     setOpenEdit(true)
   }

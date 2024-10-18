@@ -14,6 +14,7 @@ import FormEditServ from "./Form/FormEdit/FormEditServ";
 import FormEditEvents from "./Form/FormEdit/FormEditEvent";
 import FormEditDecision from "./Form/FormEdit/FormEditDecision";
 import toasty from "../utils/toast";
+import getToken from "../utils/gitToken";
 
 interface IProps {
   news: INewsApi,
@@ -21,8 +22,9 @@ interface IProps {
   noPic?: boolean,
   url:string,
   tabs?:ITabs[],
+  setRefresh:(val:string)=>void,
 }
-export default function CardNews({ noPic = true, order = 0, news,url,tabs }: IProps) {
+export default function CardNews({setRefresh, noPic = true, order = 0, news,url,tabs }: IProps) {
   const [openDel, setOpenDel] = useState(false)
   const [openEdit, setOpenEdit] = useState(false)
   const [itemID, setItemID] = useState<number>(0)
@@ -30,9 +32,6 @@ export default function CardNews({ noPic = true, order = 0, news,url,tabs }: IPr
 
   let timestamp = news.activity_date ? new Date(news.activity_date!) : new Date(news.created_at!);
 
-  const getToken = () => {
-    return localStorage.getItem('tokenMunicipality');
-};
   const handleEdite=()=>{
     setOpenEdit(true)
   }
@@ -50,7 +49,9 @@ export default function CardNews({ noPic = true, order = 0, news,url,tabs }: IPr
           }
       });
       (res.status === 200 || res.status === 201) ? toasty("success","تم الحذف بنجاح") : null;
-  } catch (error) {
+      setRefresh("delete")
+
+    } catch (error) {
       console.error('Error fetching news:', error);
       toasty("error","حدث خطأ أثناء الحذف")
   }
@@ -97,10 +98,10 @@ export default function CardNews({ noPic = true, order = 0, news,url,tabs }: IPr
           <Dialog.Panel
             className="relative transform overflow-hidden rounded-lg bg-white shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
           >
-            { (url === "/news") ? <FormEditNews item={news as INews} setOpenEdit={setOpenEdit}/>
-            : (url === "/services") ? <FormEditServ item={news as IServices} setOpenEdit={setOpenEdit} tabs={tabs}/>
-            : (url === "/activity") ? <FormEditEvents item={news as IEvents} setOpenEdit={setOpenEdit} tabs={tabs}/>
-            : (url === "/decision") ? <FormEditDecision item={news as IDecisions} setOpenEdit={setOpenEdit}/>
+            { (url === "/news") ? <FormEditNews setRefresh={setRefresh} item={news as INews} setOpenEdit={setOpenEdit}/>
+            : (url === "/services") ? <FormEditServ setRefresh={setRefresh} item={news as IServices} setOpenEdit={setOpenEdit} tabs={tabs}/>
+            : (url === "/activity") ? <FormEditEvents setRefresh={setRefresh} item={news as IEvents} setOpenEdit={setOpenEdit} tabs={tabs}/>
+            : (url === "/decision") ? <FormEditDecision setRefresh={setRefresh} item={news as IDecisions} setOpenEdit={setOpenEdit}/>
             :null }
           </Dialog.Panel>
         </div>

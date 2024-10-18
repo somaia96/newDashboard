@@ -16,13 +16,17 @@ import { IDecisions, INewsApi } from "../interfaces";
 const pagesize = 2;
 
 const Decisions = () => {
+  const [refresh, setRefresh] = useState("false")
 
   const { isLoading, error, data } = useQuery({
-    queryKey: ['decisionData'],
-    queryFn: async () => {
+    queryKey: ['decisionData', refresh],
+    queryFn: async ({ queryKey }) => {
+      const currentStatus = queryKey[1]; // Access tabId from queryKey
+      if (!currentStatus) return; // Avoid unnecessary initial request
       const { data } = await instance.get('/decision')
       return data.data
-    }
+    },
+    enabled: !!refresh,
   })
 
   const [Pag, setPag] = useState({
@@ -52,10 +56,10 @@ const Decisions = () => {
   return (
     <div className="my-10">
       <div className="container">
-        <FormAddDecision  />
+        <FormAddDecision  setRefresh={setRefresh}/>
       </div>
       {data.slice(Pag.from, Pag.to).map((news: IDecisions) => (
-        <CardNews news={news as INewsApi} key={news.id} url={"/decision"} />
+        <CardNews setRefresh={setRefresh} news={news as INewsApi} key={news.id} url={"/decision"} />
       ))}
       <div className="flex justify-items-center justify-center	">
         <Stack spacing={2}>

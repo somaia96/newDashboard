@@ -3,17 +3,14 @@ import instance from '../../../api/instance'
 import { PhotoIcon } from '@heroicons/react/24/solid'
 import { INews } from '../../../interfaces';
 import toasty from '../../../utils/toast';
+import getToken from "../../../utils/gitToken";
 
-export default function FormAddNews() {
+export default function FormAddNews({setRefresh}:{setRefresh:(val:string)=>void}) {
     const [newsData, setNewsData] = useState<INews>({
         title: "",
         description: "",
         photos: [],
     })
-
-    const getToken = () => {
-        return localStorage.getItem('tokenMunicipality');
-    };
 
     const changeAddHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -41,6 +38,8 @@ export default function FormAddNews() {
             });
 
             (res.status === 200 || res.status === 201) ? toasty("success","تم اضافة الخبر بنجاح") : null;
+            setRefresh("add")
+
         } catch (error) {
             toasty("error","حدث خطأ أثناء اضافة الخبر")
         }

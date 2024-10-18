@@ -3,9 +3,10 @@ import instance from '../../../api/instance'
 import { PhotoIcon } from '@heroicons/react/24/solid'
 import { IDecisions } from '../../../interfaces';
 import toasty from '../../../utils/toast';
+import getToken from "../../../utils/gitToken";
 
 
-export default function FormAddDecision() {
+export default function FormAddDecision({setRefresh}:{setRefresh:(val:string)=>void}) {
     let todayDate = new Date()
     const [descData, setDescData] = useState<IDecisions>({
         title: "",
@@ -15,9 +16,6 @@ export default function FormAddDecision() {
         decision_id: 1,
     })
     
-    const getToken = () => {
-        return localStorage.getItem('tokenMunicipality');
-    };
 
     const changeHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -45,6 +43,8 @@ export default function FormAddDecision() {
                 }
             });
             (res.status === 200 || res.status === 201) ? toasty("success","تم ارسال القرار") : null;
+            setRefresh("add")
+        
         } catch (error) {
             toasty("error","حدث خطأ أثناء ارسال القرار")
         }

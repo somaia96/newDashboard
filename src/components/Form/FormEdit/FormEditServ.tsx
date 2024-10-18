@@ -4,9 +4,10 @@ import { txtSlicer } from '../../../utils/functions';
 import { Button } from '../../ui/button';
 import { IServices, ITabs } from '@/interfaces';
 import toasty from '../../../utils/toast';
+import getToken from "../../../utils/gitToken";
 
 
-export default function FormEditServ({item,setOpenEdit,tabs}:{item:IServices,setOpenEdit:(val:boolean)=>void,tabs?: ITabs[]}) {
+export default function FormEditServ({setRefresh,item,setOpenEdit,tabs}:{setRefresh:(val:string)=>void,item:IServices,setOpenEdit:(val:boolean)=>void,tabs?: ITabs[]}) {
     const [activeTab, setActiveTab] = useState(+item.service_category_id)
     const [servData, setServData] = useState({
         title: item.title,
@@ -18,9 +19,6 @@ export default function FormEditServ({item,setOpenEdit,tabs}:{item:IServices,set
         setActiveTab(tabNum);
         setServData((prev) => ({ ...prev, service_category_id: `${tabNum}` }));
     }
-    const getToken = () => {
-        return localStorage.getItem('tokenMunicipality');
-    };
 
     const changeEditHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -45,6 +43,7 @@ export default function FormEditServ({item,setOpenEdit,tabs}:{item:IServices,set
 
             (res.status === 200 || res.status === 201) ? toasty("success","تم تعديل الخدمة بنجاح") : null;
             setOpenEdit(false)
+            setRefresh("edit")
 
         } catch (error) {
             toasty("error","حدث خطأ أثناء تعديل الخدمة")

@@ -15,13 +15,17 @@ import FormAddSkeleton from "../components/Skeleton/FormAddSkeleton";
 
 const pagesize = 2;
 const NewsPage = () => {
+  const [refresh, setRefresh] = useState("false")
 
   const { isLoading, error, data } = useQuery({
-    queryKey: ['newsData'],
-    queryFn: async () => {
+    queryKey: ['newsData', refresh],
+    queryFn: async ({ queryKey }) => {
+      const currentStatus = queryKey[1]; // Access tabId from queryKey
+      if (!currentStatus) return; // Avoid unnecessary initial request
       const { data } = await instance.get('/news')
       return data.data
-    }
+    },
+    enabled: !!refresh,
 
   })
 
@@ -51,10 +55,10 @@ const NewsPage = () => {
   return (
     <div className="my-10">
       <div className="container">
-        <FormAddNews />
+        <FormAddNews setRefresh={setRefresh} />
       </div>
       {data.slice(Pag.from, Pag.to).map((news: INews) => (
-        <CardNews news={news as INewsApi} key={news.id} url="/news" />
+        <CardNews setRefresh={setRefresh} news={news as INewsApi} key={news.id} url="/news" />
       ))}
       <div className="flex justify-items-center justify-center	">
         <Stack spacing={2}>

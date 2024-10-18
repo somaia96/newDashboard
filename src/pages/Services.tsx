@@ -12,9 +12,12 @@ import FormAddServ from '../components/Form/FormsAdd/FormAddServ';
 import { Dialog } from '@headlessui/react'
 import FormAddSkeleton from '../components/Skeleton/FormAddSkeleton';
 import toasty from '../utils/toast';
+import getToken from "../utils/gitToken";
 
 
 const Services = () => {
+  const [refresh, setRefresh] = useState("false")
+
   // tabs
   const [nameTab, setNameTab] = useState("");
   const [addArr, setAddArr] = useState([]);
@@ -27,19 +30,20 @@ const Services = () => {
   const [filteredEvents, setFilteredEvents] = useState([]);
 
   const { isLoading, error, data } = useQuery({
-    queryKey: ['serviceData'],
-    queryFn: async () => {
+    queryKey: ['serviceData', refresh],
+    queryFn: async ({ queryKey}) => {
+      const currentStatus = queryKey[1]; // Access tabId from queryKey
+      if (!currentStatus) return; // Avoid unnecessary initial request
       const serviceRes = await instance.get('/services')
       const tabRes = await instance.get('/service-categories');
       setFilteredEvents(serviceRes.data.data)
       setAddArr(tabRes.data.data)
       return { serviceRes, tabRes }
-    }
+    },
+    enabled: !!refresh,
+
   })
 
-  const getToken = () => {
-    return localStorage.getItem('tokenMunicipality');
-  };
   // Tabs Add & Edit
   // add tab
   const changeHandler = (e: ChangeEvent<HTMLInputElement>) => {
@@ -230,7 +234,7 @@ const Services = () => {
         </div>
       </div>
       <div className="container">
-        <FormAddServ tabs={tabs} />
+        <FormAddServ setRefresh={setRefresh} tabs={tabs} />
       </div>
       <div className="font-header font-bold text-center md:text-3xl text-primary">الخدمات</div>
       <div className='flex lg:justify-center items-center gap-3 overflow-x-scroll py-2' style={{ scrollbarWidth: "thin", scrollbarColor: "#cfcfcfb8 transparent" }}>
@@ -243,7 +247,7 @@ const Services = () => {
         ))}
       </div>
       <div className='flex gap-3 flex-col md:flex-row md:flex-wrap md:justify-between'>
-        {filteredEvents.map((item: IServices) => <CardNews tabs={tabs} noPic={false} key={item.id} order={2} news={item as INewsApi} url='/services' />)}
+        {filteredEvents.map((item: IServices) => <CardNews setRefresh={setRefresh} tabs={tabs} noPic={false} key={item.id} order={2} news={item as INewsApi} url='/services' />)}
       </div>
     </div>
   )

@@ -3,6 +3,7 @@ import instance from '../../../api/instance'
 import { PhotoIcon } from '@heroicons/react/24/solid'
 import { IMembers } from '../../../interfaces';
 import toasty from '../../../utils/toast';
+import getToken from "../../../utils/gitToken";
 
 export default function FormAddMember({ setRefresh}:{setRefresh:(val:string)=>void}) {
     const [memberAddData, setMemberAddData] = useState<IMembers>({
@@ -11,10 +12,6 @@ export default function FormAddMember({ setRefresh}:{setRefresh:(val:string)=>vo
         description:"",
         photo: "",
     })
-
-    const getToken = () => {
-        return localStorage.getItem('tokenMunicipality');
-    };
 
     const changeAddHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -45,7 +42,7 @@ export default function FormAddMember({ setRefresh}:{setRefresh:(val:string)=>vo
             });
 
             (res.status === 200 || res.status === 201) ? toasty("success","تم اضافة العضو بنجاح") : null;
-            setRefresh("true")
+            setRefresh("add")
 
         } catch (error) {
             toasty("error","حدث خطأ أثناء اضافة العضو")

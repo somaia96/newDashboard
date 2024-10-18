@@ -14,6 +14,7 @@ import Details from "../components/Complaint/Details";
 import { Dialog } from '@headlessui/react'
 import { Button } from "../components/ui/button";
 import { IComplaints, Status } from "../interfaces";
+import getToken from "../utils/gitToken";
 
 const pagesize = 9;
 
@@ -40,9 +41,6 @@ export default function Complaints() {
     const [openDetail, setOpenDetail] = useState(false)
     const TABLE_HEAD = ["الاسم", "رقم الهاتف", "التاريخ", "التفاصيل"];
 
-    const getToken = () => {
-        return localStorage.getItem('tokenMunicipality');
-    };
     const { isLoading, error, data } = useQuery({
         queryKey: ['complaint', refresh],
         queryFn: async ({ queryKey }) => {
@@ -53,7 +51,6 @@ export default function Complaints() {
                     Authorization: `Bearer ${getToken()}`
                 }
             })
-
             const trash = await instance.get('/complaints/trashed', {
                 headers: {
                     Authorization: `Bearer ${getToken()}`
@@ -80,6 +77,7 @@ export default function Complaints() {
                 Authorization: `Bearer ${getToken()}`
             }
         })
+        setRefresh("force")
 
        } catch (error) {
         console.log(error);
@@ -93,7 +91,8 @@ export default function Complaints() {
                  Authorization: `Bearer ${getToken()}`
              }
          })
- 
+         setRefresh("restore")
+
         } catch (error) {
          console.log(error);
          

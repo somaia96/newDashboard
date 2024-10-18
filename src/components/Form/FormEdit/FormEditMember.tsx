@@ -3,6 +3,7 @@ import instance from '../../../api/instance'
 import { PhotoIcon } from '@heroicons/react/24/solid'
 import { IMembers } from '@/interfaces';
 import toasty from '../../../utils/toast';
+import getToken from "../../../utils/gitToken";
 
 
 export default function FormEditMember({setRefresh, member, setOpenEdit }: {setRefresh:(val:string)=>void, member: IMembers, setOpenEdit: (val: boolean) => void }) {
@@ -13,10 +14,6 @@ export default function FormEditMember({setRefresh, member, setOpenEdit }: {setR
         photo: "",
         _method: "PUT",
     })
-
-    const getToken = () => {
-        return localStorage.getItem('tokenMunicipality');
-    };
 
     const changeEditHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -45,7 +42,7 @@ export default function FormEditMember({setRefresh, member, setOpenEdit }: {setR
                 }
             });
             (res.status === 200 || res.status === 201) ? toasty("success","تم تعديل معلومات العضو") : null;
-            setRefresh("true")
+            setRefresh("edit")
         } catch (error) {
             toasty("error","حدث خطأ أثناء تعديل المعلومات")
         }
