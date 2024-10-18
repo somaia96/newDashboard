@@ -99,7 +99,7 @@ const Services = () => {
       setOpenEdit(false)
       setDelArr([])
       setAddArr(data?.tabRes.data.data)
-
+      setRefresh("delete")
     } catch (error) {
       toasty("error","حدث خطأ أثناء حذف الفئة")
     }
@@ -192,7 +192,7 @@ const Services = () => {
                   </div>
                   <div
                     onClick={() => addToDelArr(item.id!)}
-                    className="flex rounded-md text-sm text-red-800 justify-end flex-1">
+                    className="flex cursor-pointer rounded-md text-sm text-red-800 justify-end flex-1">
                     حذف
                   </div>
                 </div>
