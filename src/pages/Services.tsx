@@ -247,7 +247,7 @@ const Services = () => {
         ))}
       </div>
       <div className='flex gap-3 flex-col md:flex-row md:flex-wrap md:justify-between'>
-        {filteredEvents.map((item: IServices) => <CardNews setRefresh={setRefresh} tabs={tabs} noPic={false} key={item.id} order={2} news={item as INewsApi} url='/services' />)}
+        {filteredEvents.map((item: IServices) => <CardNews setRefresh={setRefresh} tabs={tabs} noPic={false} key={item.id} news={item as INewsApi} url='/services' />)}
       </div>
     </div>
   )

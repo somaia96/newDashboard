@@ -18,13 +18,12 @@ import getToken from "../utils/gitToken";
 
 interface IProps {
   news: INewsApi,
-  order?: number,
   noPic?: boolean,
   url:string,
   tabs?:ITabs[],
   setRefresh:(val:string)=>void,
 }
-export default function CardNews({setRefresh, noPic = true, order = 0, news,url,tabs }: IProps) {
+export default function CardNews({setRefresh, noPic = true, news,url,tabs }: IProps) {
   const [openDel, setOpenDel] = useState(false)
   const [openEdit, setOpenEdit] = useState(false)
   const [itemID, setItemID] = useState<number>(0)
@@ -55,12 +54,9 @@ export default function CardNews({setRefresh, noPic = true, order = 0, news,url,
       console.error('Error fetching news:', error);
       toasty("error","حدث خطأ أثناء الحذف")
   }
-  setTimeout(() => {
-    window.location.reload();
-  }, 1000);
   }
   return (
-    <Card className={(order != 0 ? "max-w-full md:max-w-[49%] " : "") + "w-full max-w-[100%] p-3 md:gap-5 flex-col lg:flex-row my-3"}>
+    <Card className={(noPic != true ? "max-w-full md:max-w-[49%] " : "") + "w-full max-w-[100%] p-3 md:gap-5 flex-col lg:flex-row my-3"}>
       {/* Modal Delete Item */}
       <Dialog open={openDel} onClose={setOpenDel} className="relative z-10">
         <Dialog.Backdrop
@@ -102,15 +98,14 @@ export default function CardNews({setRefresh, noPic = true, order = 0, news,url,
             : (url === "/services") ? <FormEditServ setRefresh={setRefresh} item={news as IServices} setOpenEdit={setOpenEdit} tabs={tabs}/>
             : (url === "/activity") ? <FormEditEvents setRefresh={setRefresh} item={news as IEvents} setOpenEdit={setOpenEdit} tabs={tabs}/>
             : (url === "/decision") ? <FormEditDecision setRefresh={setRefresh} item={news as IDecisions} setOpenEdit={setOpenEdit}/>
-            :null }
+            : null }
           </Dialog.Panel>
         </div>
       </Dialog>
       {noPic && <CardHeader
         shadow={false}
         floated={false}
-        className={(order != 0 ? "hidden md:block " : "") + " relative m-0 w-full lg:w-1/4 lg:shrink-0 lg:rounded-l-none"}
-        style={order != 0 ? { order: order, marginRight: "auto" } : {}}
+        className={(noPic != true ? "hidden md:block " : "") + " relative m-0 w-full lg:w-1/4 lg:shrink-0 lg:rounded-l-none"}
       >
         {news.photos ? <img
           src={typeof(news.photos[0]) == "string"?news.photos[0]:""}
@@ -125,7 +120,7 @@ export default function CardNews({setRefresh, noPic = true, order = 0, news,url,
       <CardBody className="flex flex-col lg:pe-5 lg:py-6 lg:my-0 w-full">
        <div className="flex justify-between items-center w-full">
        <Typography variant="h6" className="mb-4 text-xl text-primary uppercase">
-          {news.title}
+          {txtSlicer(news.title,12)}
         </Typography>
         <div className='flex justify-center gap-2 items-center'>
                     <button
@@ -150,7 +145,7 @@ export default function CardNews({setRefresh, noPic = true, order = 0, news,url,
         </div>
         {news.photos ? <div className="flex max-w-full justify-center items-center md:justify-start w-full gap-3 mb-5 md:mb-0 -order-1 md:order-12">
           {news.photos.map((img, i) => (
-            <img className="w-auto h-14" key={i} src={typeof(img)=="string"?img:""} />
+            <img className="w-auto h-14" key={i} src={img} />
           ))}
         </div> : null
 
