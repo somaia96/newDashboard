@@ -29,7 +29,6 @@ export default function CardNews({setRefresh, noPic = true, order = 0, news,url,
   const [openEdit, setOpenEdit] = useState(false)
   const [itemID, setItemID] = useState<number>(0)
 
-
   let timestamp = news.activity_date ? new Date(news.activity_date!) : new Date(news.created_at!);
 
   const handleEdite=()=>{
@@ -41,7 +40,7 @@ export default function CardNews({setRefresh, noPic = true, order = 0, news,url,
   }
   
   const DeleteItem=async(id:number,url:string)=>{
-    setOpenDel(false)
+
     try {
       let res = await instance.delete(`${url}/${id}`, {
           headers: {
@@ -50,6 +49,7 @@ export default function CardNews({setRefresh, noPic = true, order = 0, news,url,
       });
       (res.status === 200 || res.status === 201) ? toasty("success","تم الحذف بنجاح") : null;
       setRefresh("delete")
+      setOpenDel(false)
 
     } catch (error) {
       console.error('Error fetching news:', error);

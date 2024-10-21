@@ -10,18 +10,18 @@ import getToken from "../../../utils/gitToken";
 
 export default function FormEditEvents({setRefresh,item,setOpenEdit,tabs}:{setRefresh:(val:string)=>void,item:IEvents,setOpenEdit:(val:boolean)=>void,tabs?: ITabs[]}) {
 
-    const [activeTab, setActiveTab] = useState(item.activity_type_id)
-    const [eventData, setEventData] = useState<IEvents>({
+    const [activeTab, setActiveTab] = useState(item.activity_type_name)
+    const [eventEditData, setEventEditData] = useState<IEvents>({
         title: item.title,
         description: item.description,
         photos: [],
-        activity_type_id: item.activity_type_id,
+        activity_type_name: item.activity_type_name,
         activity_date: item.activity_date,
         _method:"PUT",
     })
-    const handleTabClick = (tab: number) => {
+    const handleTabClick = (tab: string) => {
         setActiveTab(tab);
-        setEventData((prev) => ({ ...prev, activity_type_id: tab }));
+        setEventEditData((prev) => ({ ...prev, activity_type_name: tab }));
     }
 
     const changeEditHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
@@ -33,17 +33,19 @@ export default function FormEditEvents({setRefresh,item,setOpenEdit,tabs}:{setRe
             if (filesArray?.length > 0) {
                
             const eventPhotos = Array.from(filesArray);
-            setEventData((prev) => ({ ...prev, photos: eventPhotos }));
+            setEventEditData((prev) => ({ ...prev, photos: eventPhotos }));
             }
         } else {
-            setEventData((prev) => ({ ...prev, [name]: value }));
+            setEventEditData((prev) => ({ ...prev, [name]: value }));
         }
     };
 
     const submitEditHandler = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+        e.preventDefault();
+        console.log(eventEditData);
+        
         try {
-            let res = await instance.post(`/activity/${item.id}`, eventData, {
+            let res = await instance.post(`/activity/${item.id}`, eventEditData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                     Authorization: `Bearer ${getToken()}`,
@@ -72,8 +74,8 @@ export default function FormEditEvents({setRefresh,item,setOpenEdit,tabs}:{setRe
                             {tabs?.map((tab: ITabs) => (
                                 <Button key={tab.id}
                                     type='button'
-                                    onClick={() => handleTabClick(tab.id!)}
-                                    className={(activeTab === tab.id
+                                    onClick={() => handleTabClick(tab.name!)}
+                                    className={(activeTab === tab.name
                                         ? "bg-primary text-white border-primary"
                                         : "border-gray-200 bg-white text-gray-800") + ' w-28 border-1 border focus-visible:ring-0 py-1  hover:text-white hover:bg-primary text-base'}
                                 >{txtSlicer(tab.name, 12)}</Button>
@@ -92,7 +94,7 @@ export default function FormEditEvents({setRefresh,item,setOpenEdit,tabs}:{setRe
                                 type="text"
                                 placeholder="عنوان الفعالية"
                                 autoComplete="title"
-                                value={eventData?.title}
+                                value={eventEditData?.title}
                                 onChange={(e) => { changeEditHandler(e) }}
                                 className="bg-white block border border-1 border-gray-300 flex-1 rounded-lg px-3 py-1.5 placeholder:text-gray-400 sm:text-sm w-full sm:leading-6"
                             />
@@ -109,7 +111,7 @@ export default function FormEditEvents({setRefresh,item,setOpenEdit,tabs}:{setRe
                                 name="activity_date"
                                 type="date"
                                 autoComplete="date"
-                                value={eventData.activity_date}
+                                value={eventEditData.activity_date}
                                 onChange={(e) => { changeEditHandler(e) }}
                                 className="bg-white block border border-1 border-gray-300  flex-1 rounded-lg px-3 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 sm:text-sm w-full sm:leading-6"
                             />
@@ -125,7 +127,7 @@ export default function FormEditEvents({setRefresh,item,setOpenEdit,tabs}:{setRe
                                 id="description"
                                 name="description"
                                 rows={2}
-                                value={eventData?.description}
+                                value={eventEditData?.description}
                                 onChange={(e) => { changeEditHandler(e) }}
                                 placeholder='نص الفعالية'
                                 className="block border border-1 border-gray-300  px-3 w-full rounded-md py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6"

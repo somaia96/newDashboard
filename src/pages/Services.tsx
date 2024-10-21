@@ -109,7 +109,7 @@ const Services = () => {
 
   const handlActiveTabClick = (tab: number) => {
     setActiveTab(tab);
-    setFilteredEvents(data?.serviceRes.data.data.filter((servData: IServices) => servData.service_category_id === `${tab}`));
+    setFilteredEvents(data?.serviceRes.data.data.filter((servData: IServices) => servData.service_category_id === tab));
   };
 
 
@@ -184,14 +184,14 @@ const Services = () => {
           >
             <h2 className="font-semibold text-xl mb-5 text-primary text-center">اضافة فئة خدمة جديدة</h2>
             <div className='flex flex-col gap-2'>
-              {addArr.map((item: ITabs) => {
-
-                return <div key={item.id} className="flex items-center shadow-md p-4 rounded-lg justify-between gap-7">
+              {addArr.map((tab: ITabs) => {
+                  
+                return <div key={tab.id} className="flex items-center shadow-md p-4 rounded-lg justify-between gap-7">
                   <div className=" font-medium text-lg leading-6 text-gray-700">
-                    {item.name}
+                    {tab.name}
                   </div>
                   <div
-                    onClick={() => addToDelArr(item.id!)}
+                    onClick={() => addToDelArr(tab.id!)}
                     className="flex cursor-pointer rounded-md text-sm text-red-800 justify-end flex-1">
                     حذف
                   </div>

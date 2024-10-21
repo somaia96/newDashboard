@@ -10,7 +10,7 @@ export interface INewsApi{
     description:string,
     photos:string[],
     activity_date?:string,
-    service_category_id?:string,
+    service_category_id?:number,
     activity_type_id?:number,
     created_at?:string,
     decision_id?:number,
@@ -35,7 +35,7 @@ export interface IServices{
     id?:number,
     title:string,
     description:string,
-    service_category_id:string,
+    service_category_id:number,
     _method?:string,
 }
 
@@ -43,7 +43,7 @@ export interface IEvents{
     id?:number,
     title:string,
     description:string,
-    activity_type_id:number,
+    activity_type_name:string,
     activity_date?:string,
     photos:string[] | File[],
     _method?:string,

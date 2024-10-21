@@ -35,7 +35,7 @@ const NewsPage = () => {
   });
 
   const handelPagination = (event: ChangeEvent<unknown>, page: number) => {
-    console.log(event);
+    console.log(event?"":event);
     const from = (page - 1) * pagesize;
     const to = (page - 1) * pagesize + pagesize;
     setPag({ ...Pag, from: from, to: to });

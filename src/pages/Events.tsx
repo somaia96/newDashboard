@@ -22,7 +22,7 @@ const Events = () => {
   const [refresh, setRefresh] = useState("false")
 
   const [filteredEvents, setFilteredEvents] = useState([]);
-  const [activeTab, setActiveTab] = useState<number>(0);
+  const [activeTab, setActiveTab] = useState<string>("");
   const { isLoading, error, data } = useQuery({
     queryKey: ['activityData', refresh],
     queryFn: async ({ queryKey }) => {
@@ -38,9 +38,9 @@ const Events = () => {
 
   const tabs = data?.tabRes.data.data;
 
-  const handlActiveTabClick = (tab: number) => {
+  const handlActiveTabClick = (tab: string) => {
     setActiveTab(tab);
-    setFilteredEvents(data?.eventRes.data.data.filter((eveData: IEvents) => eveData.activity_type_id === tab));
+    setFilteredEvents(data?.eventRes.data.data.filter((eveData: IEvents) => eveData.activity_type_name === tab));
   };
 
   const [Pag, setPag] = useState({
@@ -77,8 +77,8 @@ const Events = () => {
       <div className='flex lg:justify-center items-center gap-3 py-2'>
         {tabs.map((tab: ITabs) => (
           <Button key={tab.id}
-            onClick={() => handlActiveTabClick(tab.id!)}
-            className={(activeTab === tab.id
+            onClick={() => handlActiveTabClick(tab.name!)}
+            className={(activeTab === tab.name
               ? "bg-primary text-white border-primary"
               : "border-gray-200 bg-white text-gray-800") + ' w-28 md:w-36 border-1 border focus-visible:ring-0 py-1 hover:text-white hover:bg-primary md:text-lg'}>{txtSlicer(tab.name, 12)}</Button>
         ))}

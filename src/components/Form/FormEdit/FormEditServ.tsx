@@ -8,21 +8,20 @@ import getToken from "../../../utils/gitToken";
 
 
 export default function FormEditServ({setRefresh,item,setOpenEdit,tabs}:{setRefresh:(val:string)=>void,item:IServices,setOpenEdit:(val:boolean)=>void,tabs?: ITabs[]}) {
-    const [activeTab, setActiveTab] = useState(+item.service_category_id)
-    const [servData, setServData] = useState({
+    const [activeTab, setActiveTab] = useState(item.service_category_id)
+    const [servEditData, setServEditData] = useState<IServices>({
         title: item.title,
         description: item.description,
         service_category_id: item.service_category_id,
         _method:"PUT",
     })
-    const handleTabClick = (tabNum: number) => {
-        setActiveTab(tabNum);
-        setServData((prev) => ({ ...prev, service_category_id: `${tabNum}` }));
+    const handleTabClick = (tab: number) => {
+        setActiveTab(tab);
+        setServEditData((prev) => ({ ...prev, service_category_id: tab }));
     }
-
     const changeEditHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        setServData((prev) => {
+        setServEditData((prev) => {
             return {
                 ...prev,
                 [name]: value
@@ -31,20 +30,19 @@ export default function FormEditServ({setRefresh,item,setOpenEdit,tabs}:{setRefr
     }
 
     const submitEditHandler = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+        e.preventDefault();
+        
         try {
-
-            let res = await instance.post(`/services/${item.id}`, servData, {
+            let res = await instance.post(`/services/${item.id}`, servEditData, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${getToken()}`,
                 }
             });
-
+            
             (res.status === 200 || res.status === 201) ? toasty("success","تم تعديل الخدمة بنجاح") : null;
             setOpenEdit(false)
             setRefresh("edit")
-
         } catch (error) {
             toasty("error","حدث خطأ أثناء تعديل الخدمة")
         }
@@ -85,7 +83,7 @@ export default function FormEditServ({setRefresh,item,setOpenEdit,tabs}:{setRefr
                                 type="text"
                                 placeholder='عنوان الخدمة'
                                 autoComplete="title"
-                                value={servData?.title}
+                                value={servEditData?.title}
                                 onChange={(e) => { changeEditHandler(e) }}
                                 className="bg-white block border border-1 border-gray-300 flex-1 rounded-lg px-3 py-1.5 placeholder:text-gray-400 sm:text-sm w-full sm:leading-6"
                             />
@@ -101,7 +99,7 @@ export default function FormEditServ({setRefresh,item,setOpenEdit,tabs}:{setRefr
                                 id="description"
                                 name="description"
                                 rows={2}
-                                value={servData?.description}
+                                value={servEditData?.description}
                                 onChange={(e) => { changeEditHandler(e) }}
                                 placeholder='نص الخدمة'
                                 className="block border border-1 border-gray-300  px-3 w-full rounded-md py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6"

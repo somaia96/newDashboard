@@ -11,11 +11,11 @@ export default function FormAddServ({setRefresh, tabs }: { setRefresh:(val:strin
     const [servData, setServData] = useState<IServices>({
         title: "",
         description: "",
-        service_category_id: "1",
+        service_category_id: 1,
     })
-    const handleTabClick = (tabNum: number) => {
-        setActiveTab(tabNum);
-        setServData((prev) => ({ ...prev, service_category_id: `${tabNum}` }));
+    const handleTabClick = (tab: number) => {
+        setActiveTab(tab);
+        setServData((prev) => ({ ...prev, service_category_id: tab }));
     }
 
     const changeAddHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
@@ -29,9 +29,8 @@ export default function FormAddServ({setRefresh, tabs }: { setRefresh:(val:strin
     }
 
     const submitAddHandler = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+        e.preventDefault();
         try {
-
             let res = await instance.post("/services", servData, {
                 headers: {
                     "Content-Type": "application/json",
@@ -40,7 +39,6 @@ export default function FormAddServ({setRefresh, tabs }: { setRefresh:(val:strin
             });
             (res.status === 200 || res.status === 201) ? toasty("success","تم اضافة الخدمة بنجاح") : null;
             setRefresh("add")
-
         } catch (error) {
             toasty("error","حدث خطأ أثناء اضافة الخدمة")
         }

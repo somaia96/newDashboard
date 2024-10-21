@@ -10,17 +10,17 @@ import getToken from "../../../utils/gitToken";
 
 export default function FormAddEvents({setRefresh, tabs }: {setRefresh:(val:string)=>void, tabs: ITabs[] }) {
     let todayDate = new Date()
-    const [activeTab, setActiveTab] = useState(0)
+    const [activeTab, setActiveTab] = useState("")
     const [eventData, setEventData] = useState<IEvents>({
         title: "",
         description: "",
         photos: [],
-        activity_type_id: 1,
+        activity_type_name: "",
         activity_date: todayDate.toISOString().split('T')[0],
     })
-    const handleTabClick = (tab: number) => {
+    const handleTabClick = (tab: string) => {
         setActiveTab(tab);
-        setEventData((prev) => ({ ...prev, activity_type_id: tab }));
+        setEventData((prev) => ({ ...prev, activity_type_name: tab }));
     }
 
     const changeAddHandler = async (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
@@ -40,7 +40,9 @@ export default function FormAddEvents({setRefresh, tabs }: {setRefresh:(val:stri
     };
 
     const submitAddHandler = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+        e.preventDefault();
+        console.log(eventData);
+        
         try {
             let res = await instance.post("/activity", eventData, {
                 headers: {
@@ -70,8 +72,8 @@ export default function FormAddEvents({setRefresh, tabs }: {setRefresh:(val:stri
                             {tabs.map((tab: ITabs) => (
                                 <Button key={tab.id}
                                     type='button'
-                                    onClick={() => handleTabClick(tab.id!)}
-                                    className={(activeTab === tab.id
+                                    onClick={() => handleTabClick(tab.name!)}
+                                    className={(activeTab === tab.name
                                         ? "bg-primary text-white border-primary"
                                         : "border-gray-200 bg-white text-gray-800") + ' w-28 border-1 border focus-visible:ring-0 py-1  hover:text-white hover:bg-primary text-base'}
                                 >{txtSlicer(tab.name, 12)}</Button>

@@ -19,10 +19,7 @@ export default function FormAddMember({ setRefresh}:{setRefresh:(val:string)=>vo
             const files: FileList | null = (e.target as HTMLInputElement).files;
             const filesArray = files ?? [];
             if (filesArray?.length > 0) {
-               
           const newAddPhotos = Array.from(filesArray);
-          console.log(newAddPhotos[0]);
-          
           setMemberAddData((prev) => ({ ...prev, photo: newAddPhotos[0] }));
             }
         } else {
@@ -31,7 +28,7 @@ export default function FormAddMember({ setRefresh}:{setRefresh:(val:string)=>vo
       };
       
     const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+        e.preventDefault();
         
         try {
             let res = await instance.post("/council-members", memberAddData, {
