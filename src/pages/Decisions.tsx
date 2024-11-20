@@ -19,14 +19,11 @@ const Decisions = () => {
   const [refresh, setRefresh] = useState("false")
 
   const { isLoading, error, data } = useQuery({
-    queryKey: ['decisionData', refresh],
-    queryFn: async ({ queryKey }) => {
-      const currentStatus = queryKey[1]; // Access tabId from queryKey
-      if (!currentStatus) return; // Avoid unnecessary initial request
+    queryKey: [`decisionData_${refresh}`],
+    queryFn: async () => {
       const { data } = await instance.get('/decision')
       return data.data
-    },
-    enabled: !!refresh,
+    }
   })
 
   const [Pag, setPag] = useState({

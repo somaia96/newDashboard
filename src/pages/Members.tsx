@@ -17,12 +17,9 @@ import { useState } from "react";
 
 const Members = () => {
   const [refresh, setRefresh] = useState("false")
-
   const { isLoading, error, data } = useQuery({
-    queryKey: ['council-members', refresh],
-    queryFn: async ({ queryKey }) => {
-      const currentStatus = queryKey[1]; // Access tabId from queryKey
-      if (!currentStatus) return; // Avoid unnecessary initial request
+    queryKey: [`council-members_${refresh}`],
+    queryFn: async () => {
      const { data } = await instance.get('/council-members')
       return data.data
     },

@@ -34,18 +34,14 @@ export default function Complaints() {
         created_at: "",
         photos: []
     })
-
     const [activeTab, setActiveTab] = useState("")
     const [filteredComp, setFilteredComp] = useState([]);
-
     const [openDetail, setOpenDetail] = useState(false)
     const TABLE_HEAD = ["الاسم", "رقم الهاتف", "التاريخ", "التفاصيل"];
 
     const { isLoading, error, data } = useQuery({
-        queryKey: ['complaint', refresh],
-        queryFn: async ({ queryKey }) => {
-            const currentStatus = queryKey[1]; // Access tabId from queryKey
-            if (!currentStatus) return; // Avoid unnecessary initial request
+        queryKey: [`complaint_${refresh}`],
+        queryFn: async () => {
             const comp = await instance.get('/complaint', {
                 headers: {
                     Authorization: `Bearer ${getToken()}`
@@ -58,8 +54,7 @@ export default function Complaints() {
             })
             setFilteredComp(comp.data.data)
             return { comp, trash }
-        },
-        enabled: !!refresh,
+        }
 
     })
     const handlActiveTabClick = (tab: string) => {

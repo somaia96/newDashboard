@@ -17,7 +17,6 @@ import getToken from "../utils/gitToken";
 
 const Services = () => {
   const [refresh, setRefresh] = useState("false")
-
   // tabs
   const [nameTab, setNameTab] = useState("");
   const [addArr, setAddArr] = useState([]);
@@ -30,18 +29,14 @@ const Services = () => {
   const [filteredEvents, setFilteredEvents] = useState([]);
 
   const { isLoading, error, data } = useQuery({
-    queryKey: ['serviceData', refresh],
-    queryFn: async ({ queryKey}) => {
-      const currentStatus = queryKey[1]; // Access tabId from queryKey
-      if (!currentStatus) return; // Avoid unnecessary initial request
+    queryKey: [`serviceData_${refresh}`],
+    queryFn: async () => {
       const serviceRes = await instance.get('/services')
       const tabRes = await instance.get('/service-categories');
       setFilteredEvents(serviceRes.data.data)
       setAddArr(tabRes.data.data)
       return { serviceRes, tabRes }
-    },
-    enabled: !!refresh,
-
+    }
   })
 
   // Tabs Add & Edit

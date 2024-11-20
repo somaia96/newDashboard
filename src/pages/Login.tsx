@@ -2,6 +2,7 @@ import toasty from "../utils/toast";
 import instance from "../api/instance";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 const Login = () => {
     let navigate = useNavigate()
@@ -32,13 +33,14 @@ const Login = () => {
                 } ,2000);
         }
         } catch (error) {
+            console.log(error);
             toasty("error",'تأكد من صحة المعلومات')
     };
     }
     return (
         <div className="h-screen flex container items-center justify-center">
           <div className="flex rounded-lg overflow-hidden w-3/4">
-            
+            <Toaster/>
           <div className="w-2/5 bg-white p-10">
                 <form className='w-full rounded-xl' onSubmit={(e) => submitHandler(e)}>
                    <div className="space-y-3">

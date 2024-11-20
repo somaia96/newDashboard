@@ -20,20 +20,16 @@ const pagesize = 2;
 
 const Events = () => {
   const [refresh, setRefresh] = useState("false")
-
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [activeTab, setActiveTab] = useState<string>("");
   const { isLoading, error, data } = useQuery({
-    queryKey: ['activityData', refresh],
-    queryFn: async ({ queryKey }) => {
-      const currentStatus = queryKey[1]; // Access tabId from queryKey
-      if (!currentStatus) return; // Avoid unnecessary initial request
+    queryKey: [`activityData_${refresh}`],
+    queryFn: async () => {
       const eventRes = await instance.get('/activity')
       const tabRes = await instance.get('/activity-type');
       setFilteredEvents(eventRes.data.data)
       return { eventRes, tabRes }
-    },
-    enabled: !!refresh,
+    }
   })
 
   const tabs = data?.tabRes.data.data;

@@ -16,17 +16,12 @@ import FormAddSkeleton from "../components/Skeleton/FormAddSkeleton";
 const pagesize = 2;
 const NewsPage = () => {
   const [refresh, setRefresh] = useState("false")
-
   const { isLoading, error, data } = useQuery({
-    queryKey: ['newsData', refresh],
-    queryFn: async ({ queryKey }) => {
-      const currentStatus = queryKey[1]; // Access tabId from queryKey
-      if (!currentStatus) return; // Avoid unnecessary initial request
+    queryKey: [`newsData_${refresh}`],
+    queryFn: async () => {
       const { data } = await instance.get('/news')
       return data.data
-    },
-    enabled: !!refresh,
-
+    }
   })
 
   const [Pag, setPag] = useState({

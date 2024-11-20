@@ -2,7 +2,6 @@ import getToken from "../utils/gitToken";
 import { ReactNode, useState } from "react";
 import { Navigate } from "react-router-dom";
 
-
 interface IProps {
     children:ReactNode,
     redirectPath:string,
